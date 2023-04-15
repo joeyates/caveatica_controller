@@ -35,4 +35,12 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
+webcam_image_path =
+  System.get_env("WEBCAM_IMAGE_PATH") ||
+    raise """
+    environment variable WEBCAM_IMAGE_PATH is missing.
+    """
+
+config :caveatica_controller, :webcam_image_path, webcam_image_path
+
 import_config "#{config_env()}.exs"
