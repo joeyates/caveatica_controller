@@ -43,4 +43,6 @@ webcam_image_path =
 
 config :caveatica_controller, :webcam_image_path, webcam_image_path
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 import_config "#{config_env()}.exs"
