@@ -13,7 +13,7 @@ defmodule CaveaticaControllerWeb.Router do
   scope "/", CaveaticaControllerWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", HomeLive.Index, :index
   end
 
   if Application.compile_env(:caveatica_controller, :dev_routes) do
