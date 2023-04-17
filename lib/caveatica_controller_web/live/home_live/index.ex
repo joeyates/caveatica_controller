@@ -2,6 +2,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   use CaveaticaControllerWeb, :live_view
 
   @caveatica_node :"caveatica@127.0.0.1"
+  @this_node :"controller@127.0.0.1"
+  @cookie :caveatica_cookie
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
   @update_interval 5000 # ms
   @server_timezone "Etc/UTC"
@@ -10,6 +12,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    Node.start(@this_node)
+    Node.set_cookie(@cookie)
     {
       :ok,
       socket
