@@ -1,4 +1,12 @@
 <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
+<div>
+<%= if @available do %>
+  Yes
+<% else %>
+  No
+<% end %>
+</div>
+
 <img src={@image_path}>
 <div><%= @image_timestamp %></div>

@@ -1,6 +1,7 @@
 defmodule CaveaticaControllerWeb.HomeLive.Index do
   use CaveaticaControllerWeb, :live_view
 
+  @caveatica_node :"caveatica@127.0.0.1"
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
   @update_interval 5000 # ms
   @server_timezone "Etc/UTC"
@@ -12,6 +13,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     {
       :ok,
       socket
+      |> check_availability()
       |> assign(:image_timestamp, nil)
       |> process_image()
     }
@@ -25,6 +27,15 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, assign(socket, :page_title, "Caveatica")}
+  end
+
+  defp check_availability(socket) do
+    case Node.ping(@caveatica_node) do
+      :pong ->
+        assign(socket, :available, true)
+      :pang ->
+        assign(socket, :available, false)
+    end
   end
 
   defp process_image(socket) do
