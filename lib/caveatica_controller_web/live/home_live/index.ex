@@ -25,7 +25,9 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     {erl_date, erl_time} = stat.mtime
     time = Time.from_erl!(erl_time)
     date = Date.from_erl!(erl_date)
-    timestamp = DateTime.new!(date, time, "Europe/Rome")
+    timestamp =
+      DateTime.new!(date, time, "Etc/UTC")
+      |> DateTime.shift_zone!("Europe/Rome")
     socket
     |> assign(:image_path, @image_path)
     |> assign(:image_timestamp, timestamp)
