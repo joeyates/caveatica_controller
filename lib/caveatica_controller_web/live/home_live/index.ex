@@ -34,7 +34,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       :ok = rotate_90(original_relative_path, converted_relative_path)
       epoch = DateTime.to_unix(timestamp)
       socket
-      |> assign(:image_path, "#{converted_path}?time=#{epoch}")
+      |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
       |> assign(:image_timestamp, timestamp)
     else
       socket
