@@ -28,8 +28,9 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     timestamp =
       DateTime.new!(date, time, "Etc/UTC")
       |> DateTime.shift_zone!("Europe/Rome")
+    epoch = DateTime.to_unix(timestamp)
     socket
-    |> assign(:image_path, @image_path)
+    |> assign(:image_path, "#{@image_path}?time=#{epoch}")
     |> assign(:image_timestamp, timestamp)
   end
 end
