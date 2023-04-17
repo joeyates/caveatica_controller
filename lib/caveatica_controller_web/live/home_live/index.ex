@@ -61,7 +61,13 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   def rotate_90(from, to) do
     System.cmd(
       "convert",
-      [from, "-rotate", "90", "-gravity", "center", "-crop", "320x320", to]
+      [
+        from,
+        "-rotate", "90",
+        "-gravity", "center",
+        "-crop", "320x320",
+        to
+      ]
     )
     :ok
   end
