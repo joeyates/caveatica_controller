@@ -20,6 +20,11 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   @impl true
+  def handle_info(:check_availability, socket) do
+    {:noreply, check_availability(socket)}
+  end
+
+  @impl true
   def handle_info(:update_image, socket) do
     {:noreply, process_image(socket)}
   end
@@ -30,6 +35,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   defp check_availability(socket) do
+    Process.send_after(self(), :check_availability, @update_interval)
     case Node.ping(@caveatica_node) do
       :pong ->
         assign(socket, :available, true)

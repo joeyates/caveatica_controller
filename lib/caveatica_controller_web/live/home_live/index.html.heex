@@ -1,12 +1,10 @@
 <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
-<div>
 <%= if @available do %>
-  Yes
+  <div class="text-green-700">Available</div>
 <% else %>
-  No
+  <div class="text-red-700">Unavailable</div>
 <% end %>
-</div>
 
 <img src={@image_path}>
 <div><%= @image_timestamp %></div>
