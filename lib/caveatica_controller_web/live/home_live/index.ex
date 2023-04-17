@@ -6,7 +6,12 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, process_image(socket)}
+    {
+      :ok,
+      socket
+      |> assign(:image_timestamp, nil)
+      |> process_image()
+    }
   end
 
   @impl true
@@ -21,16 +26,23 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   defp process_image(socket) do
     Process.send_after(self(), :update_image, @update_interval)
-    stat = File.stat!("./priv/static/#{@image_path}")
+    timestamp = timestamp("./priv/static/#{@image_path}")
+    if timestamp != socket.assigns.image_timestamp do
+      epoch = DateTime.to_unix(timestamp)
+      socket
+      |> assign(:image_path, "#{@image_path}?time=#{epoch}")
+      |> assign(:image_timestamp, timestamp)
+    else
+      socket
+    end
+  end
+
+  defp timestamp(path) do
+    stat = File.stat!(path)
     {erl_date, erl_time} = stat.mtime
     time = Time.from_erl!(erl_time)
     date = Date.from_erl!(erl_date)
-    timestamp =
-      DateTime.new!(date, time, "Etc/UTC")
-      |> DateTime.shift_zone!("Europe/Rome")
-    epoch = DateTime.to_unix(timestamp)
-    socket
-    |> assign(:image_path, "#{@image_path}?time=#{epoch}")
-    |> assign(:image_timestamp, timestamp)
+    DateTime.new!(date, time, "Etc/UTC")
+    |> DateTime.shift_zone!("Europe/Rome")
   end
 end
