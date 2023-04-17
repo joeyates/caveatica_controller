@@ -3,6 +3,9 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
   @update_interval 5000 # ms
+  @server_timezone "Etc/UTC"
+  @user_timezone "Europe/Rome"
+  @maximum_image_dimension 320
 
   @impl true
   def mount(_params, _session, socket) do
@@ -54,8 +57,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     {erl_date, erl_time} = stat.mtime
     time = Time.from_erl!(erl_time)
     date = Date.from_erl!(erl_date)
-    DateTime.new!(date, time, "Etc/UTC")
-    |> DateTime.shift_zone!("Europe/Rome")
+    DateTime.new!(date, time, @server_timezone)
+    |> DateTime.shift_zone!(@user_timezone)
   end
 
   def rotate_90(from, to) do
@@ -65,7 +68,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         from,
         "-rotate", "90",
         "-gravity", "center",
-        "-crop", "320x320",
+        "-crop", "#{@maximum_image_dimension}x#{@maximum_image_dimension}",
         to
       ]
     )
