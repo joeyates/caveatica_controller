@@ -20,6 +20,9 @@ directory.
 
 We need acces to epmd (port 4369) and caveatica itself (port 5555).
 
+The container will run with host networking, so the Phoenix app's port must
+not clash with any application running on the host.
+
 ```sh
 dokku docker-options:add $DOKKU_APP deploy "--net=host"
 ```
