@@ -85,8 +85,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   defp converted_path(path) do
     parts = Path.split(path)
-    [last | rest] = Enum.reverse(parts)
-    ["converted-#{last}" | rest]
+    [filename | rest] = Enum.reverse(parts)
+    ["converted-#{filename}" | rest]
     |> Enum.reverse()
     |> Path.join()
   end
