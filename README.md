@@ -2,7 +2,7 @@
 
 A web application for monitoring and controlling Caveatica.
 
-# Deployment
+# First Deployment
 
 Set up and deploy Dokku Phoenix app.
 
@@ -25,4 +25,19 @@ not clash with any application running on the host.
 
 ```sh
 dokku docker-options:add $DOKKU_APP deploy "--net=host"
+```
+
+# Deployment
+
+As the app uses host networking, its port (5000) is actualloy the host's port.
+For this reason, 2 instances of the app cannot run at the same time.
+As Dokku starts 'upcoming' instances before stopping currently running
+instances, we get an `:eaddrinuse` error.
+
+For this reason, it is necessary to stop the app before
+re-deploying.
+
+```sh
+dokku ps:stop $DOKKU_APP
+git push dokku
 ```
