@@ -5,7 +5,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
-  @update_interval 5000 # ms
+  @update_interval 1000 # ms
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
