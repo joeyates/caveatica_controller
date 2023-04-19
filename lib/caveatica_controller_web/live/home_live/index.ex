@@ -24,6 +24,12 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   @impl true
+  def handle_event("close", _params, socket) do
+    Node.spawn(@caveatica_node, Caveatica, :close, [5000])
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("nudge-open", _params, socket) do
     Node.spawn(@caveatica_node, Caveatica, :open, [30])
     {:noreply, socket}
