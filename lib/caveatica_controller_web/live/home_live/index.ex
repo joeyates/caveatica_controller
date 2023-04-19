@@ -5,7 +5,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
-  @update_interval 1000 # ms
+  @ping_interval 1000 # ms
+  @update_image_interval 500 # ms
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
@@ -65,7 +66,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   defp check_availability(socket) do
-    Process.send_after(self(), :check_availability, @update_interval)
+    Process.send_after(self(), :check_availability, @ping_interval)
     case Node.ping(@caveatica_node) do
       :pong ->
         assign(socket, :available, true)
@@ -75,7 +76,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   defp process_image(socket) do
-    Process.send_after(self(), :update_image, @update_interval)
+    Process.send_after(self(), :update_image, @update_image_interval)
     original_relative_path = "./priv/static/#{@static_image_path}"
     timestamp = timestamp(original_relative_path)
     if timestamp != socket.assigns.image_timestamp do
