@@ -5,10 +5,12 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
-  @update_interval 5000 # ms
+  @update_interval 1000 # ms
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
+  @close_time 4300 # ms
+  @open_time 4900 # ms
 
   @impl true
   def mount(_params, _session, socket) do
@@ -21,6 +23,30 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       |> assign(:image_timestamp, nil)
       |> process_image()
     }
+  end
+
+  @impl true
+  def handle_event("close", _params, socket) do
+    Node.spawn(@caveatica_node, Caveatica, :close, [@close_time])
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("nudge-closed", _params, socket) do
+    Node.spawn(@caveatica_node, Caveatica, :close, [30])
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("nudge-open", _params, socket) do
+    Node.spawn(@caveatica_node, Caveatica, :open, [30])
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("open", _params, socket) do
+    Node.spawn(@caveatica_node, Caveatica, :open, [@open_time])
+    {:noreply, socket}
   end
 
   @impl true
@@ -67,8 +93,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   defp converted_path(path) do
     parts = Path.split(path)
-    [last | rest] = Enum.reverse(parts)
-    ["converted-#{last}" | rest]
+    [filename | rest] = Enum.reverse(parts)
+    ["converted-#{filename}" | rest]
     |> Enum.reverse()
     |> Path.join()
   end
