@@ -9,6 +9,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
+  @close_time 4300 # ms
+  @open_time 4900 # ms
 
   @impl true
   def mount(_params, _session, socket) do
@@ -25,7 +27,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_event("close", _params, socket) do
-    Node.spawn(@caveatica_node, Caveatica, :close, [5000])
+    Node.spawn(@caveatica_node, Caveatica, :close, [@close_time])
     {:noreply, socket}
   end
 
@@ -43,7 +45,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_event("open", _params, socket) do
-    Node.spawn(@caveatica_node, Caveatica, :open, [5000])
+    Node.spawn(@caveatica_node, Caveatica, :open, [@open_time])
     {:noreply, socket}
   end
 
