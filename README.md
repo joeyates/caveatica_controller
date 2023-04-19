@@ -15,3 +15,11 @@ dokku config:set --no-restart $DOKKU_APP WEBCAM_IMAGE_PATH=data/caveatica.jpg
 
 The value of WEBCAM_IMAGE_PATH should be the path relative to the 'static'
 directory.
+
+## Give Access to Host Networking
+
+We need acces to epmd (port 4369) and caveatica itself (port 5555).
+
+```sh
+dokku docker-options:add $DOKKU_APP deploy "--net=host"
+```
