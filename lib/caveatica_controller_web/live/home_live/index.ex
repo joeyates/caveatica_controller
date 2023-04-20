@@ -22,6 +22,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       :ok,
       socket
       |> check_availability()
+      |> assign(:image_path, nil)
       |> assign(:image_timestamp, nil)
       |> process_image()
     }
