@@ -88,16 +88,24 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   defp process_image(socket) do
     Process.send_after(self(), :update_image, @update_image_interval)
+
+    original_relative_path = "./priv/static/#{@static_image_path}"
+    original_exists = File.exists?(original_relative_path)
+    have_image = if socket.assigns.image_path, do: true, else: false
+    load_initial = !have_image && original_exists
+
     relative_lock_path = "./priv/static/#{@lock_path}"
     lock_exists = File.exists?(relative_lock_path)
-    if lock_exists do
-      original_relative_path = "./priv/static/#{@static_image_path}"
+
+    if load_initial || lock_exists do
       timestamp = timestamp(original_relative_path)
       converted_path = converted_path(@static_image_path)
       converted_relative_path = "./priv/static/#{converted_path}"
       :ok = rotate_90(original_relative_path, converted_relative_path)
+      if lock_exists do
+        File.rm(relative_lock_path)
+      end
       epoch = DateTime.to_unix(timestamp)
-      File.rm(relative_lock_path)
       socket
       |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
       |> assign(:image_timestamp, timestamp)
