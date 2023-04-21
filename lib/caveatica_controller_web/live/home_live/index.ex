@@ -10,6 +10,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @lock_path String.replace(@static_image_path, ".jpg", ".lock")
   @ping_interval 1000 # ms
   @update_image_interval 500 # ms
+  @update_image_age_interval 1000 # ms
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
@@ -26,8 +27,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       |> check_availability()
       |> assign(:image_path, nil)
       |> assign(:image_timestamp, nil)
-      |> assign_image_age()
       |> process_image()
+      |> update_image_age()
     }
   end
 
@@ -63,6 +64,11 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def handle_info(:update_image, socket) do
     {:noreply, process_image(socket)}
+  end
+
+  @impl true
+  def handle_info(:update_image_age, socket) do
+    {:noreply, update_image_age(socket)}
   end
 
   @impl true
@@ -107,6 +113,11 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     ["converted-#{filename}" | rest]
     |> Enum.reverse()
     |> Path.join()
+  end
+
+  defp update_image_age(socket) do
+    Process.send_after(self(), :update_image_age, @update_image_age_interval)
+    assign_image_age(socket)
   end
 
   defp assign_image_age(socket) do
