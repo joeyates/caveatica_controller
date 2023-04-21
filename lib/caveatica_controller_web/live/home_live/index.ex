@@ -1,6 +1,8 @@
 defmodule CaveaticaControllerWeb.HomeLive.Index do
   use CaveaticaControllerWeb, :live_view
 
+  alias CaveaticaController.Cldr.DateTime.Relative
+
   @caveatica_node :"caveatica@127.0.0.1"
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
@@ -23,7 +25,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       socket
       |> check_availability()
       |> assign(:image_path, nil)
-      |> assign(:image_age, nil)
+      |> assign(:image_timestamp, nil)
+      |> assign_image_age()
       |> process_image()
     }
   end
@@ -89,10 +92,10 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       :ok = rotate_90(original_relative_path, converted_relative_path)
       epoch = DateTime.to_unix(timestamp)
       File.rm(relative_lock_path)
-      image_age = CaveaticaController.Cldr.DateTime.Relative.to_string!(timestamp)
       socket
       |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
-      |> assign(:image_age, "Image created #{image_age} (#{timestamp})")
+      |> assign(:image_timestamp, timestamp)
+      |> assign_image_age()
     else
       socket
     end
@@ -104,6 +107,17 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     ["converted-#{filename}" | rest]
     |> Enum.reverse()
     |> Path.join()
+  end
+
+  defp assign_image_age(socket) do
+    timestamp = socket.assigns.image_timestamp
+    image_age = if timestamp do
+      ago = Relative.to_string!(timestamp)
+      "Image created #{ago} (#{timestamp})"
+    else
+      "No image"
+    end
+    assign(socket, :image_age, image_age)
   end
 
   defp timestamp(path) do
