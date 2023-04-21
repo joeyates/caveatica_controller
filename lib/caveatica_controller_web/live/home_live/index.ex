@@ -5,6 +5,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
   @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
+  @lock_path String.replace(@static_image_path, ".jpg", ".lock")
   @ping_interval 1000 # ms
   @update_image_interval 500 # ms
   @server_timezone "Etc/UTC"
@@ -21,6 +22,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       :ok,
       socket
       |> check_availability()
+      |> assign(:image_path, nil)
       |> assign(:image_timestamp, nil)
       |> process_image()
     }
@@ -77,13 +79,16 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   defp process_image(socket) do
     Process.send_after(self(), :update_image, @update_image_interval)
-    original_relative_path = "./priv/static/#{@static_image_path}"
-    timestamp = timestamp(original_relative_path)
-    if timestamp != socket.assigns.image_timestamp do
+    relative_lock_path = "./priv/static/#{@lock_path}"
+    lock_exists = File.exists?(relative_lock_path)
+    if lock_exists do
+      original_relative_path = "./priv/static/#{@static_image_path}"
+      timestamp = timestamp(original_relative_path)
       converted_path = converted_path(@static_image_path)
       converted_relative_path = "./priv/static/#{converted_path}"
       :ok = rotate_90(original_relative_path, converted_relative_path)
       epoch = DateTime.to_unix(timestamp)
+      File.rm(relative_lock_path)
       socket
       |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
       |> assign(:image_timestamp, timestamp)
