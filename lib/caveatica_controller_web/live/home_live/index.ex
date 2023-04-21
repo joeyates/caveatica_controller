@@ -23,7 +23,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       socket
       |> check_availability()
       |> assign(:image_path, nil)
-      |> assign(:image_timestamp, nil)
+      |> assign(:image_age, nil)
       |> process_image()
     }
   end
@@ -89,9 +89,10 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       :ok = rotate_90(original_relative_path, converted_relative_path)
       epoch = DateTime.to_unix(timestamp)
       File.rm(relative_lock_path)
+      image_age = CaveaticaController.Cldr.DateTime.Relative.to_string!(timestamp)
       socket
       |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
-      |> assign(:image_timestamp, timestamp)
+      |> assign(:image_age, "Image created #{image_age} (#{timestamp})")
     else
       socket
     end
