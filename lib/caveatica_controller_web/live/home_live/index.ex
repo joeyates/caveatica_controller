@@ -1,6 +1,8 @@
 defmodule CaveaticaControllerWeb.HomeLive.Index do
   use CaveaticaControllerWeb, :live_view
 
+  alias CaveaticaController.Cldr.DateTime.Relative
+
   @caveatica_node :"caveatica@127.0.0.1"
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
@@ -8,6 +10,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @lock_path String.replace(@static_image_path, ".jpg", ".lock")
   @ping_interval 1000 # ms
   @update_image_interval 500 # ms
+  @update_image_age_interval 1000 # ms
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
@@ -25,6 +28,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       |> assign(:image_path, nil)
       |> assign(:image_timestamp, nil)
       |> process_image()
+      |> update_image_age()
     }
   end
 
@@ -63,6 +67,11 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   @impl true
+  def handle_info(:update_image_age, socket) do
+    {:noreply, update_image_age(socket)}
+  end
+
+  @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, assign(socket, :page_title, "Caveatica")}
   end
@@ -79,19 +88,28 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   defp process_image(socket) do
     Process.send_after(self(), :update_image, @update_image_interval)
+
+    original_relative_path = "./priv/static/#{@static_image_path}"
+    original_exists = File.exists?(original_relative_path)
+    have_image = if socket.assigns.image_path, do: true, else: false
+    load_initial = !have_image && original_exists
+
     relative_lock_path = "./priv/static/#{@lock_path}"
     lock_exists = File.exists?(relative_lock_path)
-    if lock_exists do
-      original_relative_path = "./priv/static/#{@static_image_path}"
+
+    if load_initial || lock_exists do
       timestamp = timestamp(original_relative_path)
       converted_path = converted_path(@static_image_path)
       converted_relative_path = "./priv/static/#{converted_path}"
       :ok = rotate_90(original_relative_path, converted_relative_path)
+      if lock_exists do
+        File.rm(relative_lock_path)
+      end
       epoch = DateTime.to_unix(timestamp)
-      File.rm(relative_lock_path)
       socket
       |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
       |> assign(:image_timestamp, timestamp)
+      |> assign_image_age()
     else
       socket
     end
@@ -103,6 +121,22 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     ["converted-#{filename}" | rest]
     |> Enum.reverse()
     |> Path.join()
+  end
+
+  defp update_image_age(socket) do
+    Process.send_after(self(), :update_image_age, @update_image_age_interval)
+    assign_image_age(socket)
+  end
+
+  defp assign_image_age(socket) do
+    timestamp = socket.assigns.image_timestamp
+    image_age = if timestamp do
+      ago = Relative.to_string!(timestamp)
+      "Image created #{ago} (#{timestamp})"
+    else
+      "No image"
+    end
+    assign(socket, :image_age, image_age)
   end
 
   defp timestamp(path) do

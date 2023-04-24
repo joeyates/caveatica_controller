@@ -25,6 +25,7 @@ defmodule CaveaticaController.MixProject do
 
   defp deps do
     [
+      {:ex_cldr_dates_times, "~> 2.0"},
       {:finch, "~> 0.13"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
