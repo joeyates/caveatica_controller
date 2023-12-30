@@ -14,11 +14,9 @@ defmodule CaveaticaController.Application do
       {Phoenix.PubSub, name: CaveaticaController.PubSub},
       # Start Finch
       {Finch, name: CaveaticaController.Finch},
-      # Start the Endpoint (http/https)
-      CaveaticaControllerWeb.Endpoint
       # Start a worker by calling: CaveaticaController.Worker.start_link(arg)
       # {CaveaticaController.Worker, arg}
-    ]
+    ] ++ optional_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -32,5 +30,19 @@ defmodule CaveaticaController.Application do
   def config_change(changed, _new, removed) do
     CaveaticaControllerWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def optional_children do
+    # If we run `iex -S mix`, we do not want to start the endpoint
+    if running_server?() do
+      [CaveaticaControllerWeb.Endpoint]
+    else
+      []
+    end
+  end
+
+  defp running_server? do
+    # The command `mix phx.server` sets serve_endpoints
+    Application.get_env(:phoenix, :serve_endpoints)
   end
 end
