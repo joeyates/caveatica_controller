@@ -6,8 +6,6 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @caveatica_node :"caveatica@127.0.0.1"
   @this_node :"controller@127.0.0.1"
   @cookie :caveatica_cookie
-  @static_image_path Application.compile_env(:caveatica_controller, :webcam_image_path)
-  @lock_path String.replace(@static_image_path, ".jpg", ".lock")
   @ping_interval 1000 # ms
   @update_image_interval 500 # ms
   @update_image_age_interval 1000 # ms
@@ -89,25 +87,24 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   defp process_image(socket) do
     Process.send_after(self(), :update_image, @update_image_interval)
 
-    original_relative_path = "./priv/static/#{@static_image_path}"
+    original_relative_path = "./priv/static/#{static_image_path()}"
     original_exists = File.exists?(original_relative_path)
     have_image = if socket.assigns.image_path, do: true, else: false
     load_initial = !have_image && original_exists
 
-    relative_lock_path = "./priv/static/#{@lock_path}"
+    relative_lock_path = "./priv/static/#{lock_path()}"
     lock_exists = File.exists?(relative_lock_path)
 
     if load_initial || lock_exists do
       timestamp = timestamp(original_relative_path)
-      converted_path = converted_path(@static_image_path)
-      converted_relative_path = "./priv/static/#{converted_path}"
+      converted_relative_path = "./priv/static/#{converted_path()}"
       :ok = rotate_90(original_relative_path, converted_relative_path)
       if lock_exists do
         File.rm(relative_lock_path)
       end
       epoch = DateTime.to_unix(timestamp)
       socket
-      |> assign(:image_path, "/#{converted_path}?time=#{epoch}")
+      |> assign(:image_path, "/#{converted_path()}?time=#{epoch}")
       |> assign(:image_timestamp, timestamp)
       |> assign_image_age()
     else
@@ -115,7 +112,14 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     end
   end
 
-  defp converted_path(path) do
+  defp static_image_path do
+    Application.fetch_env!(:caveatica_controller, :webcam_image_path)
+  end
+
+  defp lock_path, do: String.replace(static_image_path(), ".jpg", ".lock")
+
+  defp converted_path do
+    path = static_image_path()
     parts = Path.split(path)
     [filename | rest] = Enum.reverse(parts)
     ["converted-#{filename}" | rest]
