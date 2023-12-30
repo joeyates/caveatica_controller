@@ -3,26 +3,17 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   alias CaveaticaController.Cldr.DateTime.Relative
 
-  @caveatica_node :"caveatica@127.0.0.1"
-  @this_node :"controller@127.0.0.1"
-  @cookie :caveatica_cookie
-  @ping_interval 1000 # ms
   @update_image_interval 500 # ms
   @update_image_age_interval 1000 # ms
   @server_timezone "Etc/UTC"
   @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
-  @close_time 4300 # ms
-  @open_time 4900 # ms
 
   @impl true
   def mount(_params, _session, socket) do
-    Node.start(@this_node)
-    Node.set_cookie(@cookie)
     {
       :ok,
       socket
-      |> check_availability()
       |> assign(:image_path, nil)
       |> assign(:image_timestamp, nil)
       |> process_image()
@@ -32,31 +23,22 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_event("close", _params, socket) do
-    Node.spawn(@caveatica_node, Caveatica, :close, [@close_time])
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("nudge-closed", _params, socket) do
-    Node.spawn(@caveatica_node, Caveatica, :close, [30])
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("nudge-open", _params, socket) do
-    Node.spawn(@caveatica_node, Caveatica, :open, [30])
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("open", _params, socket) do
-    Node.spawn(@caveatica_node, Caveatica, :open, [@open_time])
     {:noreply, socket}
-  end
-
-  @impl true
-  def handle_info(:check_availability, socket) do
-    {:noreply, check_availability(socket)}
   end
 
   @impl true
@@ -72,16 +54,6 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, assign(socket, :page_title, "Caveatica")}
-  end
-
-  defp check_availability(socket) do
-    Process.send_after(self(), :check_availability, @ping_interval)
-    case Node.ping(@caveatica_node) do
-      :pong ->
-        assign(socket, :available, true)
-      :pang ->
-        assign(socket, :available, false)
-    end
   end
 
   defp process_image(socket) do
