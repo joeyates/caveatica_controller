@@ -21,7 +21,10 @@ config :caveatica_controller, :webcam_image_path, webcam_image_path
 case config_env() do
   :prod ->
 
-    host = System.get_env("PHX_HOST") || "example.com"
+    host = System.get_env("PHX_HOST") ||
+      raise """
+      environment variable PHX_HOST is missing.
+      """
     port = String.to_integer(System.get_env("PORT") || "4000")
     phx_server = if System.get_env("PHX_SERVER"), do: true, else: false
 
