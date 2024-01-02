@@ -24,7 +24,7 @@ case config_env() do
       raise """
       environment variable PHX_HOST is missing.
       """
-    port = String.to_integer(System.get_env("PORT") || "4000")
+    port = String.to_integer(System.get_env("PORT", "4000"))
     phx_server = if System.get_env("PHX_SERVER"), do: true, else: false
 
     config :caveatica_controller, CaveaticaControllerWeb.Endpoint,
