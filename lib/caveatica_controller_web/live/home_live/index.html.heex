@@ -1,11 +1,5 @@
 <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
-<%= if @available do %>
-  <div class="text-green-700">Available</div>
-<% else %>
-  <div class="text-red-700">Unavailable</div>
-<% end %>
-
 <img src={@image_path}>
 <div><%= @image_age %></div>
 
@@ -13,16 +7,13 @@
   <button class="text-3xl" phx-click="nudge-open">^</button>
 </div>
 
-
 <div>
   <button class="text-3xl" phx-click="open">^^</button>
 </div>
 
-
 <div>
   <button class="text-3xl" phx-click="close">vv</button>
 </div>
-
 
 <div>
   <button class="text-3xl" phx-click="nudge-closed">v</button>
