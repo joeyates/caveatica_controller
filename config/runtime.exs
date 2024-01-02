@@ -10,13 +10,18 @@ secret_key_base =
 config :caveatica_controller, CaveaticaControllerWeb.Endpoint,
   secret_key_base: secret_key_base
 
-webcam_image_path =
-  System.get_env("WEBCAM_IMAGE_PATH") ||
+data_path =
+  System.get_env("DATA_PATH") ||
     raise """
-    environment variable WEBCAM_IMAGE_PATH is missing.
+    environment variable DATA_PATH is missing.
     """
 
-config :caveatica_controller, :webcam_image_path, webcam_image_path
+config :caveatica_controller, :data_path, data_path
+
+log_level = System.get_env("LOG_LEVEL")
+if log_level do
+  config :logger, level: String.to_existing_atom(log_level)
+end
 
 case config_env() do
   :prod ->
@@ -34,11 +39,6 @@ case config_env() do
         port: port
       ],
       server: phx_server
-
-    log_level = System.get_env("LOG_LEVEL")
-    if log_level do
-      config :logger, level: String.to_existing_atom(log_level)
-    end
 
   _ ->
     nil

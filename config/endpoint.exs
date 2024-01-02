@@ -23,7 +23,7 @@ case config_env() do
       ],
       live_reload: [
         patterns: [
-          ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+          ~r"priv/static/.*(js|css)$",
           ~r"priv/gettext/.*(po)$",
           ~r"lib/caveatica_controller_web/(controllers|live|components)/.*(ex|heex)$"
         ]
