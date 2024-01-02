@@ -6,6 +6,10 @@ A web application for monitoring and controlling Caveatica.
 
 Set up and deploy Dokku Phoenix app.
 
+```sh
+git remote add dokku dokku@$DOKKU_HOST:$DOKKU_APP
+```
+
 ## Setup access to webcam images
 
 ```sh
