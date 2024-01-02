@@ -18,6 +18,11 @@ data_path =
 
 config :caveatica_controller, :data_path, data_path
 
+log_level = System.get_env("LOG_LEVEL")
+if log_level do
+  config :logger, level: String.to_existing_atom(log_level)
+end
+
 case config_env() do
   :prod ->
     host = System.get_env("PHX_HOST") ||
@@ -34,11 +39,6 @@ case config_env() do
         port: port
       ],
       server: phx_server
-
-    log_level = System.get_env("LOG_LEVEL")
-    if log_level do
-      config :logger, level: String.to_existing_atom(log_level)
-    end
 
   _ ->
     nil
