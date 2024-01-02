@@ -23,21 +23,22 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_event("close", _params, socket) do
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{})
     {:noreply, socket}
   end
 
-  @impl true
   def handle_event("nudge-closed", _params, socket) do
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_closed", %{})
     {:noreply, socket}
   end
 
-  @impl true
   def handle_event("nudge-open", _params, socket) do
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_open", %{})
     {:noreply, socket}
   end
 
-  @impl true
   def handle_event("open", _params, socket) do
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{})
     {:noreply, socket}
   end
 
