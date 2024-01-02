@@ -33,7 +33,6 @@ case config_env() do
         ip: {0, 0, 0, 0, 0, 0, 0, 0},
         port: port
       ],
-      secret_key_base: secret_key_base,
       server: phx_server
 
     log_level = System.get_env("LOG_LEVEL")
