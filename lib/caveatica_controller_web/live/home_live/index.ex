@@ -59,12 +59,13 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     original_exists = File.exists?(original_path)
 
     if original_exists do
+      Logger.info("HomeLive.Index process_image/1")
       timestamp = timestamp(original_path)
       converted_path = converted_path()
       :ok = rotate_90(original_path, converted_path)
       epoch = DateTime.to_unix(timestamp)
       socket
-      |> assign(:image_path, "/converted.jpg?time=#{epoch}")
+      |> assign(:image_path, "/data/converted.jpg?time=#{epoch}")
       |> assign(:image_timestamp, timestamp)
       |> assign_image_age()
     else
