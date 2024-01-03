@@ -298,6 +298,39 @@ defmodule CaveaticaControllerWeb.CoreComponents do
                                    pattern placeholder readonly required rows size step)
   slot :inner_block
 
+  ###########################
+  # Custom radio input
+  def input(%{field: %Phoenix.HTML.FormField{} = field, type: "radio", value: value} = assigns) do
+    assigns
+    |> assign(field: nil, id: assigns.id || field.id)
+    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+    |> assign_new(:checked, fn -> field.value == value end)
+    |> input()
+  end
+
+  def input(%{type: "radio"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name}>
+      <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+        <input
+          type="radio"
+          id={@id || @name}
+          name={@name}
+          value={@value}
+          checked={@checked}
+          class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+          {@rest}
+        />
+        <%= @label %>
+      </label>
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
+  #############################
+  # Standard inputs
   def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns
     |> assign(field: nil, id: assigns.id || field.id)
