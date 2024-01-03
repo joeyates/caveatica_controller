@@ -14,19 +14,19 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     <div><%= @image_age %></div>
 
     <div>
-      <button class="text-3xl" phx-click="nudge-open">^</button>
+      <button class="text-3xl" phx-click="nudge-open">Step open ^</button>
     </div>
 
     <div>
-      <button class="text-3xl" phx-click="open">^^</button>
+      <button class="text-3xl" phx-click="open">Open fully ^^</button>
     </div>
 
     <div>
-      <button class="text-3xl" phx-click="close">vv</button>
+      <button class="text-3xl" phx-click="close">Close fully vv</button>
     </div>
 
     <div>
-      <button class="text-3xl" phx-click="nudge-closed">v</button>
+      <button class="text-3xl" phx-click="nudge-closed">Step close v</button>
     </div>
     """
   end
