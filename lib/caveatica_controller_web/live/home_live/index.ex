@@ -12,8 +12,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
     <div class="flex flex-row">
       <div>
-        <img src={@image_path}>
-        <div><%= @image_age %></div>
+        <img src={@image_path} title={@image_age}>
 
         <div class="mt-4">
           <div class="flex flex-col">
