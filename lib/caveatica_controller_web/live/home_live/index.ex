@@ -6,6 +6,32 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   alias Phoenix.PubSub
 
   @impl true
+  def render(assigns) do
+    ~H"""
+    <h1 class="mb-4 text-4xl">Caveatica Live</h1>
+
+    <img src={@image_path}>
+    <div><%= @image_age %></div>
+
+    <div>
+      <button class="text-3xl" phx-click="nudge-open">^</button>
+    </div>
+
+    <div>
+      <button class="text-3xl" phx-click="open">^^</button>
+    </div>
+
+    <div>
+      <button class="text-3xl" phx-click="close">vv</button>
+    </div>
+
+    <div>
+      <button class="text-3xl" phx-click="nudge-closed">v</button>
+    </div>
+    """
+  end
+
+  @impl true
   def mount(_params, _session, socket) do
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
     {
