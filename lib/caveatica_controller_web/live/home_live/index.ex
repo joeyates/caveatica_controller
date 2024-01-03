@@ -14,6 +14,18 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       <div>
         <img src={@image_path}>
         <div><%= @image_age %></div>
+
+        <div class="mt-4">
+          <div class="flex flex-col">
+            <.simple_form for={@light_form} id="light_form" phx-change="change-light">
+              <div>Light</div>
+              <div class="flex flex-row gap-6">
+                <.input type="radio" field={@light_form[:state]} value="off" label="Off"/>
+                <.input type="radio" field={@light_form[:state]} value="on" label="On"/>
+              </div>
+            </.simple_form>
+          </div>
+        </div>
       </div>
 
       <div class="ml-4 flex flex-row">
@@ -67,6 +79,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       socket
       |> assign(:image_path, nil)
       |> assign(:image_age, nil)
+      |> set_light("off")
     }
   end
 
@@ -91,6 +104,14 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     {:noreply, socket}
   end
 
+  def handle_event("change-light", %{"light" => %{"state" => state}}, socket) do
+    Logger.info("HomeLive.Index handle_event change-light: #{inspect(state)}")
+    {
+      :noreply,
+      set_light(socket, state)
+    }
+  end
+
   @impl true
   def handle_info({:image_upload, path, age}, socket) do
     Logger.info("HomeLive.Index handle_info image_upload")
@@ -105,5 +126,10 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def handle_params(_params, _url, socket) do
     {:noreply, assign(socket, :page_title, "Caveatica")}
+  end
+
+  defp set_light(socket, state) do
+    socket
+    |> assign(:light_form, to_form(%{"state" => state}, as: "light"))
   end
 end
