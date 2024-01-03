@@ -13,20 +13,42 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     <img src={@image_path}>
     <div><%= @image_age %></div>
 
-    <div>
-      <button class="text-3xl" phx-click="nudge-open">Step open ^</button>
-    </div>
+    <div class="flex flex-col">
+        <div>
+          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-open">
+            <div class="flex flex-col">
+              <div>^</div>
+              <div>Step open</div>
+            </div>
+          </button>
+        </div>
 
-    <div>
-      <button class="text-3xl" phx-click="open">Open fully ^^</button>
-    </div>
+        <div class="mt-4">
+          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="open">
+            <div class="flex flex-col">
+              <div>^^</div>
+              <div>Open</div>
+            </div>
+          </button>
+        </div>
 
-    <div>
-      <button class="text-3xl" phx-click="close">Close fully vv</button>
-    </div>
+        <div class="mt-4">
+          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="close">
+            <div class="flex flex-col">
+              <div>Close</div>
+              <div class="transform rotate-180">^^</div>
+            </div>
+          </button>
+        </div>
 
-    <div>
-      <button class="text-3xl" phx-click="nudge-closed">Step close v</button>
+        <div class="mt-4">
+          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-closed">
+            <div class="flex flex-col">
+              <div>Step close</div>
+              <div class="transform rotate-180">^</div>
+            </div>
+          </button>
+        </div>
     </div>
     """
   end
