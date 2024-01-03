@@ -10,45 +10,51 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     ~H"""
     <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
-    <img src={@image_path}>
-    <div><%= @image_age %></div>
+    <div class="flex flex-row">
+      <div>
+        <img src={@image_path}>
+        <div><%= @image_age %></div>
+      </div>
 
-    <div class="flex flex-col">
-        <div>
-          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-open">
-            <div class="flex flex-col">
-              <div>^</div>
-              <div>Step open</div>
-            </div>
-          </button>
-        </div>
+      <div class="ml-4 flex flex-row">
+        <div class="flex flex-col">
+          <div>
+            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-open">
+              <div class="flex flex-col">
+                <div>^</div>
+                <div>Step open</div>
+              </div>
+            </button>
+          </div>
 
-        <div class="mt-4">
-          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="open">
-            <div class="flex flex-col">
-              <div>^^</div>
-              <div>Open</div>
-            </div>
-          </button>
-        </div>
+          <div class="mt-4">
+            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="open">
+              <div class="flex flex-col">
+                <div>^^</div>
+                <div>Open</div>
+              </div>
+            </button>
+          </div>
 
-        <div class="mt-4">
-          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="close">
-            <div class="flex flex-col">
-              <div>Close</div>
-              <div class="transform rotate-180">^^</div>
-            </div>
-          </button>
-        </div>
+          <div class="mt-4">
+            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="close">
+              <div class="flex flex-col">
+                <div>Close</div>
+                <div class="transform rotate-180">^^</div>
+              </div>
+            </button>
+          </div>
 
-        <div class="mt-4">
-          <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-closed">
-            <div class="flex flex-col">
-              <div>Step close</div>
-              <div class="transform rotate-180">^</div>
-            </div>
-          </button>
-        </div>
+          <div class="mt-4">
+            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-closed">
+              <div class="flex flex-col">
+                <div>Step close</div>
+                <div class="transform rotate-180">^</div>
+              </div>
+            </button>
+          </div>
+       </div>
+      </div>
     </div>
     """
   end
