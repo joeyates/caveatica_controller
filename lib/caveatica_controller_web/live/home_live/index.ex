@@ -73,59 +73,56 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
-    {
-      :ok,
-      socket
-      |> assign(:image_path, nil)
-      |> assign(:image_age, nil)
-      |> set_light("off")
-    }
+    socket
+    |> assign(:image_path, nil)
+    |> assign(:image_age, nil)
+    |> set_light("off")
+    |> ok()
   end
 
   @impl true
   def handle_event("close", _params, socket) do
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{})
-    {:noreply, socket}
+    noreply(socket)
   end
 
   def handle_event("nudge-closed", _params, socket) do
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_closed", %{})
-    {:noreply, socket}
+    noreply(socket)
   end
 
   def handle_event("nudge-open", _params, socket) do
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_open", %{})
-    {:noreply, socket}
+    noreply(socket)
   end
 
   def handle_event("open", _params, socket) do
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{})
-    {:noreply, socket}
+    noreply(socket)
   end
 
   def handle_event("change-light", %{"light" => %{"state" => state}}, socket) do
     Logger.info("HomeLive.Index handle_event change-light: #{inspect(state)}")
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "light", %{"state" => state})
-    {
-      :noreply,
-      set_light(socket, state)
-    }
+    socket
+    |> set_light(state)
+    |> noreply()
   end
 
   @impl true
   def handle_info({:image_upload, path, age}, socket) do
     Logger.info("HomeLive.Index handle_info image_upload")
-    {
-      :noreply,
-      socket
-      |> assign(image_path: path)
-      |> assign(image_age: age)
-    }
+    socket
+    |> assign(image_path: path)
+    |> assign(image_age: age)
+    |> noreply()
   end
 
   @impl true
   def handle_params(_params, _url, socket) do
-    {:noreply, assign(socket, :page_title, "Caveatica")}
+    socket
+    |> assign(:page_title, "Caveatica")
+    |> noreply()
   end
 
   defp set_light(socket, state) do

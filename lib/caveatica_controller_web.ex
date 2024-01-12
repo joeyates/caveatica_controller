@@ -54,6 +54,8 @@ defmodule CaveaticaControllerWeb do
       use Phoenix.LiveView,
         layout: {CaveaticaControllerWeb.Layouts, :app}
 
+      import CaveaticaControllerWeb.ReplyHelpers
+
       unquote(html_helpers())
     end
   end
