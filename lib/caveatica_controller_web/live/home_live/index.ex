@@ -22,8 +22,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
             <.simple_form for={@light_form} id="light_form" phx-change="change-light">
               <div>Light</div>
               <div class="flex flex-row gap-6">
-                <.input type="radio" field={@light_form[:state]} value="off" label="Off"/>
-                <.input type="radio" field={@light_form[:state]} value="on" label="On"/>
+                <.input type="radio" field={@light_form[:state]} value="off" label="Off" />
+                <.input type="radio" field={@light_form[:state]} value="on" label="On" />
               </div>
             </.simple_form>
           </div>
@@ -67,7 +67,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
               </div>
             </button>
           </div>
-       </div>
+        </div>
       </div>
     </div>
     """
@@ -76,6 +76,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
+
     socket
     |> assign(:image_path, nil)
     |> assign(:image_age, nil)
@@ -107,6 +108,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   def handle_event("change-light", %{"light" => %{"state" => state}}, socket) do
     Logger.info("HomeLive.Index handle_event change-light: #{inspect(state)}")
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "light", %{"state" => state})
+
     socket
     |> set_light(state)
     |> noreply()
@@ -115,6 +117,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def handle_info({:image_upload, path, age}, socket) do
     Logger.info("HomeLive.Index handle_info image_upload")
+
     socket
     |> assign(image_path: path)
     |> assign(image_age: age)
