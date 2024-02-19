@@ -34,7 +34,8 @@ defmodule CaveaticaController.Images do
 
   defp image_age(timestamp) do
     ago = Relative.to_string!(timestamp)
-    "Image created #{ago} (#{timestamp})"
+    truncated = timestamp |> DateTime.truncate(:second)
+    "Image created #{ago} (#{truncated})"
   end
 
   def rotate_90(from, to) do
