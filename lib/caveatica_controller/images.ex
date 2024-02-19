@@ -6,10 +6,12 @@ defmodule CaveaticaController.Images do
   @maximum_image_dimension 320
 
   def receive(binary) do
+    timestamp =
+      DateTime.now!(@server_timezone)
+      |> DateTime.shift_zone!(@user_timezone)
     original_path = original_path()
     File.write!(original_path, binary)
 
-    timestamp = timestamp(original_path)
     converted_path = converted_path()
     :ok = rotate_90(original_path, converted_path)
     epoch = DateTime.to_unix(timestamp)
@@ -33,15 +35,6 @@ defmodule CaveaticaController.Images do
   defp image_age(timestamp) do
     ago = Relative.to_string!(timestamp)
     "Image created #{ago} (#{timestamp})"
-  end
-
-  defp timestamp(path) do
-    stat = File.stat!(path)
-    {erl_date, erl_time} = stat.mtime
-    time = Time.from_erl!(erl_time)
-    date = Date.from_erl!(erl_date)
-    DateTime.new!(date, time, @server_timezone)
-    |> DateTime.shift_zone!(@user_timezone)
   end
 
   def rotate_90(from, to) do
