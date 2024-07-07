@@ -91,11 +91,13 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   def handle_event("nudge-closed", _params, socket) do
+    Logger.info("HomeLive.Index handle_event nudge-closed")
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_closed", %{})
     noreply(socket)
   end
 
   def handle_event("nudge-open", _params, socket) do
+    Logger.info("HomeLive.Index handle_event nudge-open")
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_open", %{})
     noreply(socket)
   end
