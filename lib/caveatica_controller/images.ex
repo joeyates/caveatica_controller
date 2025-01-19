@@ -9,6 +9,7 @@ defmodule CaveaticaController.Images do
     timestamp =
       DateTime.now!(@server_timezone)
       |> DateTime.shift_zone!(@user_timezone)
+
     original_path = original_path()
     File.write!(original_path, binary)
 
@@ -43,12 +44,16 @@ defmodule CaveaticaController.Images do
       "convert",
       [
         from,
-        "-rotate", "90",
-        "-gravity", "center",
-        "-crop", "#{@maximum_image_dimension}x#{@maximum_image_dimension}",
+        "-rotate",
+        "90",
+        "-gravity",
+        "center",
+        "-crop",
+        "#{@maximum_image_dimension}x#{@maximum_image_dimension}",
         to
       ]
     )
+
     :ok
   end
 end
