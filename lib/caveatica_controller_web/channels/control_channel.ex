@@ -11,7 +11,7 @@ defmodule CaveaticaControllerWeb.ControlChannel do
   end
 
   def handle_in("get_metrics", _params, socket) do
-    Logger.info("Control channel get_metrics")
+    Logger.debug("Control channel get_metrics")
     {:reply, {:ok, %{result: "ok"}}, socket}
   end
 
