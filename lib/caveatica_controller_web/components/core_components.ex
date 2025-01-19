@@ -154,8 +154,12 @@ defmodule CaveaticaControllerWeb.CoreComponents do
       {@rest}
     >
       <p :if={@title} class="flex items-center gap-1.5 text-[0.8125rem] font-semibold leading-6">
-        <%= if @kind == :info do %>I<% end %>
-        <%= if @kind == :error do %>E<% end %>
+        <%= if @kind == :info do %>
+          I
+        <% end %>
+        <%= if @kind == :error do %>
+          E
+        <% end %>
         <%= @title %>
       </p>
       <p class="mt-2 text-[0.8125rem] leading-5"><%= msg %></p>
@@ -449,8 +453,7 @@ defmodule CaveaticaControllerWeb.CoreComponents do
   def error(assigns) do
     ~H"""
     <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm leading-6 text-rose-600">
-      !
-      <%= render_slot(@inner_block) %>
+      ! <%= render_slot(@inner_block) %>
     </p>
     """
   end
@@ -600,8 +603,7 @@ defmodule CaveaticaControllerWeb.CoreComponents do
         navigate={@navigate}
         class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
       >
-        &lt;-
-        <%= render_slot(@inner_block) %>
+        &lt;- <%= render_slot(@inner_block) %>
       </.link>
     </div>
     """

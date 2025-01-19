@@ -10,6 +10,12 @@ Set up and deploy Dokku Phoenix app.
 git remote add dokku dokku@$DOKKU_HOST:$DOKKU_APP
 ```
 
+Set open and close times
+
+```sh
+dokku config:set --no-restart $DOKKU_APP OPEN_TIME=08:00 CLOSE_TIME=20:00
+```
+
 ## Setup access to webcam images
 
 ```sh

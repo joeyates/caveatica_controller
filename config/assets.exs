@@ -22,4 +22,3 @@ config :tailwind,
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
-

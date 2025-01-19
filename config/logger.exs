@@ -14,4 +14,3 @@ case config_env() do
   :test ->
     config :logger, level: :warning
 end
-
