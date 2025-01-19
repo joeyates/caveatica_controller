@@ -53,8 +53,8 @@ close_cron =
 config :caveatica_controller, CaveaticaController.Scheduler,
   timezone: "Europe/Rome",
   jobs: [
-    {open_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "close", %{}]}},
-    {close_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "open", %{}]}}
+    {open_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "open", %{}]}},
+    {close_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "close", %{}]}}
   ]
 
 case config_env() do
