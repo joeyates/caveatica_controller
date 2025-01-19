@@ -7,16 +7,16 @@ defmodule CaveaticaController.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      # Start the Telemetry supervisor
-      CaveaticaControllerWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: CaveaticaController.PubSub},
-      # Start Finch
-      {Finch, name: CaveaticaController.Finch},
-      # Start a worker by calling: CaveaticaController.Worker.start_link(arg)
-      # {CaveaticaController.Worker, arg}
-    ] ++ optional_children()
+    children =
+      [
+        # Start the Telemetry supervisor
+        CaveaticaControllerWeb.Telemetry,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: CaveaticaController.PubSub},
+        # Start Finch
+        {Finch, name: CaveaticaController.Finch},
+        CaveaticaController.Scheduler
+      ] ++ optional_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
