@@ -23,6 +23,40 @@ if log_level do
   config :logger, level: String.to_existing_atom(log_level)
 end
 
+open_env =
+  System.get_env("OPEN_TIME") ||
+    raise """
+    environment variable OPEN_TIME is missing.
+    """
+
+close_env =
+  System.get_env("CLOSE_TIME") ||
+    raise """
+    environment variable CLOSE_TIME is missing.
+    """
+
+open_time = Time.from_iso8601!(open_env)
+close_time = Time.from_iso8601!(close_env)
+
+open_cron =
+  Crontab.CronExpression.Composer.compose(%Crontab.CronExpression{
+    minute: [open_time.minute],
+    hour: [open_time.hour]
+  })
+
+close_cron =
+  Crontab.CronExpression.Composer.compose(%Crontab.CronExpression{
+    minute: [close_time.minute],
+    hour: [close_time.hour]
+  })
+
+config :caveatica_controller, CaveaticaController.Scheduler,
+  timezone: "Europe/Rome",
+  jobs: [
+    {open_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "close", %{}]}},
+    {close_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "open", %{}]}}
+  ]
+
 case config_env() do
   :prod ->
     host = System.get_env("PHX_HOST") ||
