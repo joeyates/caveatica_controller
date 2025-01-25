@@ -3,43 +3,53 @@ defmodule CaveaticaController.Times do
   Provides opening and closing times for CaveaticaController based on sunrise and sunset.
   """
 
-  @close_offset_from_sunset 30 * 60 * 1000
-  @open_offset_from_sunrise -15 * 60 * 1000
+  @close_offset_from_sunset_minutes 30
+  @open_offset_from_sunrise_minutes -15
 
-  def next_open() do
+  def next_open!() do
+    next_sunrise = next_sunrise!()
+    DateTime.add(next_sunrise, @open_offset_from_sunrise_minutes, :minute)
+  end
+
+  def next_close!() do
+    next_sunset = next_sunset!()
+    DateTime.add(next_sunset, @close_offset_from_sunset_minutes, :minute)
+  end
+
+  defp next_sunrise!() do
     now = now()
     todays_sunrise = sunrise!(now)
 
     if now < todays_sunrise do
-      todays_sunrise + @open_offset_from_sunrise
+      todays_sunrise
     else
       tomorrow =
         now
         |> DateTime.to_date()
         |> Date.add(1)
 
-      sunrise!(tomorrow) + @open_offset_from_sunrise
+      sunrise!(tomorrow)
     end
   end
 
-  def next_close() do
+  defp next_sunset!() do
     now = now()
     todays_sunset = sunset!(now)
 
     if now < todays_sunset do
-      todays_sunset + @close_offset_from_sunset
+      todays_sunset
     else
       tomorrow =
         now
         |> DateTime.to_date()
         |> Date.add(1)
 
-      sunset!(tomorrow) + @close_offset_from_sunset
+      sunset!(tomorrow)
     end
   end
 
   defp timezone() do
-    Application.fetch_env!(:caveatica_controller, :caveatica_timezone)
+    Application.fetch_env!(:caveatica_controller, :timezone)
   end
 
   defp location() do
@@ -53,12 +63,16 @@ defmodule CaveaticaController.Times do
   end
 
   defp sunrise!(date) do
-    {:ok, date_time} = Astro.sunrise(location(), date)
+    {:ok, date_time} = Astro.sunrise(location(), date, time_zone_resolver: &time_zone_resolver/1)
     date_time
   end
 
   defp sunset!(date) do
-    {:ok, date_time} = Astro.sunset(location(), date)
+    {:ok, date_time} = Astro.sunset(location(), date, time_zone_resolver: &time_zone_resolver/1)
     date_time
+  end
+
+  defp time_zone_resolver(_date_time) do
+    {:ok, timezone()}
   end
 end
