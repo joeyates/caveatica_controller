@@ -23,39 +23,27 @@ if log_level do
   config :logger, level: String.to_existing_atom(log_level)
 end
 
-open_env =
-  System.get_env("OPEN_TIME") ||
+timezone =
+  System.get_env("CAVEATICA_TIMEZONE") ||
     raise """
-    environment variable OPEN_TIME is missing.
+    environment variable CAVEATICA_TIMEZONE is missing.
     """
 
-close_env =
-  System.get_env("CLOSE_TIME") ||
-    raise """
-    environment variable CLOSE_TIME is missing.
-    """
+config :caveatica_controller, :timezone, timezone
 
-open_time = Time.from_iso8601!(open_env)
-close_time = Time.from_iso8601!(close_env)
+{longitude, ""} =
+  "CAVEATICA_LONGITUDE"
+  |> System.get_env()
+  |> Float.parse()
 
-open_cron =
-  Crontab.CronExpression.Composer.compose(%Crontab.CronExpression{
-    minute: [open_time.minute],
-    hour: [open_time.hour]
-  })
+{latitude, ""} =
+  "CAVEATICA_LATITUDE"
+  |> System.get_env()
+  |> Float.parse()
 
-close_cron =
-  Crontab.CronExpression.Composer.compose(%Crontab.CronExpression{
-    minute: [close_time.minute],
-    hour: [close_time.hour]
-  })
-
-config :caveatica_controller, CaveaticaController.Scheduler,
-  timezone: "Europe/Rome",
-  jobs: [
-    {open_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "open", %{}]}},
-    {close_cron, {CaveaticaControllerWeb.Endpoint, :broadcast!, ["control", "close", %{}]}}
-  ]
+config :caveatica_controller,
+  longitude: longitude,
+  latitude: latitude
 
 case config_env() do
   :prod ->
