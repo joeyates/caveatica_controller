@@ -3,6 +3,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   require Logger
 
+  alias CaveaticaController.Times
   alias Phoenix.PubSub
 
   @impl true
@@ -27,6 +28,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
               </div>
             </.simple_form>
           </div>
+          <div class="text-sm">Next open: <%= @next_open %></div>
+          <div class="text-sm">Next close: <%= @next_close %></div>
         </div>
       </div>
 
@@ -77,9 +80,14 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   def mount(_params, _session, socket) do
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
 
+    next_open = Times.next_open!()
+    next_close = Times.next_close!()
+
     socket
     |> assign(:image_path, nil)
     |> assign(:image_age, nil)
+    |> assign(:next_open, next_open)
+    |> assign(:next_close, next_close)
     |> set_light("off")
     |> ok()
   end

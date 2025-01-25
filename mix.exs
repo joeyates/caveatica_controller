@@ -39,6 +39,7 @@ defmodule CaveaticaController.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:tzdata, "~> 1.1"},
       # Scheduled tasks
+      {:astro, "~> 1.1"},
       {:quantum, "~> 3.0"},
       # Assets
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
