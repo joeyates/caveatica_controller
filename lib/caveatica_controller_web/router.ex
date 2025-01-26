@@ -14,6 +14,7 @@ defmodule CaveaticaControllerWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive.Index, :index
+    get "/health", PageController, :health
   end
 
   if Application.compile_env(:caveatica_controller, :dev_routes) do
