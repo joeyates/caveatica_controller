@@ -95,24 +95,24 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_event("close", _params, socket) do
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{})
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{"duration" => 6500})
     noreply(socket)
   end
 
   def handle_event("nudge-closed", _params, socket) do
     Logger.info("HomeLive.Index handle_event nudge-closed")
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_closed", %{})
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{"duration" => 100})
     noreply(socket)
   end
 
   def handle_event("nudge-open", _params, socket) do
     Logger.info("HomeLive.Index handle_event nudge-open")
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "nudge_open", %{})
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{"duration" => 100})
     noreply(socket)
   end
 
   def handle_event("open", _params, socket) do
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{})
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{"duration" => 7350})
     noreply(socket)
   end
 
