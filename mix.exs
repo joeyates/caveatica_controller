@@ -43,7 +43,7 @@ defmodule CaveaticaController.MixProject do
       {:quantum, "~> 3.0"},
       # Assets
       {:esbuild, "~> 0.5", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.1.8", runtime: Mix.env() == :dev}
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
 
