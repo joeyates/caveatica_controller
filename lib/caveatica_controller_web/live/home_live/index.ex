@@ -126,7 +126,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_info({:image_upload, path, age}, socket) do
-    Logger.info("HomeLive.Index handle_info image_upload")
+    Logger.debug("HomeLive.Index handle_info image_upload")
 
     socket
     |> assign(image_path: path)

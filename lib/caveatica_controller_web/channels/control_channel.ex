@@ -17,7 +17,7 @@ defmodule CaveaticaControllerWeb.ControlChannel do
 
   def handle_in("upload_image", %{"binary" => encoded}, socket) do
     binary = Base.decode64!(encoded)
-    Logger.info("Control channel upload_image, binary: #{byte_size(binary)}")
+    Logger.debug("Control channel upload_image, binary: #{byte_size(binary)}")
     {:ok, path, age} = CaveaticaController.Images.receive(binary)
     PubSub.broadcast(CaveaticaController.PubSub, "image_upload", {:image_upload, path, age})
     {:noreply, socket}
