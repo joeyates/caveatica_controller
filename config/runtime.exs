@@ -45,6 +45,14 @@ config :caveatica_controller,
   longitude: longitude,
   latitude: latitude
 
+reset_time = %Crontab.CronExpression{}
+
+config :caveatica_controller, CaveaticaController.Scheduler,
+  timezone: "Europe/Rome",
+  jobs: [
+    {reset_time, {CaveaticaController.Scheduler, :reset, []}}
+  ]
+
 case config_env() do
   :prod ->
     host =
