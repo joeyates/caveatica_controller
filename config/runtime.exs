@@ -29,8 +29,6 @@ timezone =
     environment variable CAVEATICA_TIMEZONE is missing.
     """
 
-config :caveatica_controller, :timezone, timezone
-
 {longitude, ""} =
   "CAVEATICA_LONGITUDE"
   |> System.get_env()
@@ -41,9 +39,22 @@ config :caveatica_controller, :timezone, timezone
   |> System.get_env()
   |> Float.parse()
 
+{open_duation, ""} =
+  "CAVEATICA_OPEN_DURATION"
+  |> System.get_env()
+  |> Integer.parse()
+
+{close_duation, ""} =
+  "CAVEATICA_CLOSE_DURATION"
+  |> System.get_env()
+  |> Integer.parse()
+
 config :caveatica_controller,
   longitude: longitude,
-  latitude: latitude
+  latitude: latitude,
+  timezone: timezone,
+  open_duration: open_duation,
+  close_duration: close_duation
 
 reset_time = %Crontab.CronExpression{minute: [0], hour: [12]}
 

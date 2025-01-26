@@ -95,7 +95,10 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_event("close", _params, socket) do
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{"duration" => 6500})
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{
+      "duration" => close_duration()
+    })
+
     noreply(socket)
   end
 
@@ -112,7 +115,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   def handle_event("open", _params, socket) do
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{"duration" => 7350})
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{"duration" => open_duration()})
+
     noreply(socket)
   end
 
@@ -145,5 +149,13 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   defp set_light(socket, state) do
     socket
     |> assign(:light_form, to_form(%{"state" => state}, as: "light"))
+  end
+
+  defp open_duration() do
+    Application.fetch_env!(:caveatica_controller, :open_duration)
+  end
+
+  defp close_duration() do
+    Application.fetch_env!(:caveatica_controller, :close_duration)
   end
 end
