@@ -5,13 +5,19 @@ defmodule CaveaticaController.Scheduler do
 
   require Logger
 
+  def init(opts) do
+    jobs = opts[:jobs] || []
+    jobs = jobs ++ [open_job(), close_job()]
+    Keyword.put(opts, :jobs, jobs)
+  end
+
   def reset() do
     Logger.info("Resetting Open/Close times")
     Logger.info("Before:")
     list_jobs()
     delete_existing()
-    create_open()
-    create_close()
+    add_job(open_job())
+    add_job(close_job())
     Logger.info("After:")
     list_jobs()
   end
@@ -21,7 +27,7 @@ defmodule CaveaticaController.Scheduler do
     delete_job(:close)
   end
 
-  defp create_open() do
+  defp open_job() do
     next_open = Times.next_open!()
 
     schedule = %Crontab.CronExpression{
@@ -33,10 +39,9 @@ defmodule CaveaticaController.Scheduler do
     |> Quantum.Job.set_name(:open)
     |> Quantum.Job.set_schedule(schedule)
     |> Quantum.Job.set_task(fn -> Logger.info("Open!!") end)
-    |> add_job()
   end
 
-  defp create_close() do
+  defp close_job() do
     next_close = Times.next_close!()
 
     schedule = %Crontab.CronExpression{
@@ -48,7 +53,6 @@ defmodule CaveaticaController.Scheduler do
     |> Quantum.Job.set_name(:close)
     |> Quantum.Job.set_schedule(schedule)
     |> Quantum.Job.set_task(fn -> Logger.info("Close!!") end)
-    |> add_job()
   end
 
   defp list_jobs() do
