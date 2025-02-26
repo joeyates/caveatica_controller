@@ -38,7 +38,13 @@ defmodule CaveaticaController.Scheduler do
     new_job()
     |> Quantum.Job.set_name(:open)
     |> Quantum.Job.set_schedule(schedule)
-    |> Quantum.Job.set_task(fn -> Logger.info("Open!!") end)
+    |> Quantum.Job.set_task(fn ->
+      Logger.info("Opening via cron job")
+
+      CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{
+        "duration" => open_duration()
+      })
+    end)
   end
 
   defp close_job() do
@@ -52,11 +58,25 @@ defmodule CaveaticaController.Scheduler do
     new_job()
     |> Quantum.Job.set_name(:close)
     |> Quantum.Job.set_schedule(schedule)
-    |> Quantum.Job.set_task(fn -> Logger.info("Close!!") end)
+    |> Quantum.Job.set_task(fn ->
+      Logger.info("Closing via cron job")
+
+      CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{
+        "duration" => close_duration()
+      })
+    end)
   end
 
   defp list_jobs() do
     jobs = jobs()
     Logger.info("Current Jobs: #{inspect(jobs)}")
+  end
+
+  defp open_duration() do
+    Application.fetch_env!(:caveatica_controller, :open_duration)
+  end
+
+  defp close_duration() do
+    Application.fetch_env!(:caveatica_controller, :close_duration)
   end
 end
