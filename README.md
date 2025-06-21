@@ -2,6 +2,15 @@
 
 A web application for monitoring and controlling Caveatica.
 
+Opening and closing times are goverened by a calculation of
+local sunrise and sunset times (see `CaveaticeController.Times`).
+
+Each time is adjusted by an offset, so that opeining is a few minutes before sunrise
+and closing is a few minutes after sunset.
+
+These actions are scheduled jobs (see `CaveaticaController.Scheduler`) and
+are reset every day via another job, set to run att midday (see `config/runtime.exs`).
+
 # First Deployment
 
 Set up and deploy Dokku Phoenix app.
@@ -10,10 +19,15 @@ Set up and deploy Dokku Phoenix app.
 git remote add dokku dokku@$DOKKU_HOST:$DOKKU_APP
 ```
 
-Set open and close times
+Set opening and closing parameters
 
 ```sh
-dokku config:set --no-restart $DOKKU_APP OPEN_TIME=08:00:00 CLOSE_TIME=20:00:00
+dokku config:set --no-restart $DOKKU_APP \
+  CAVEATICA_LATITUDE=48.85 \
+  CAVEATICA_LONGITUDE=2.35 \
+  CAVEATICA_TIMEZONE=Europe/Paris \
+  CAVEATICA_OPEN_DURATION=3600 \
+  CAVEATICA_CLOSE_DURATION=3600
 ```
 
 ## Setup access to webcam images
