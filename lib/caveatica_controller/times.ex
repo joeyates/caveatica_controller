@@ -3,8 +3,8 @@ defmodule CaveaticaController.Times do
   Provides opening and closing times for CaveaticaController based on sunrise and sunset.
   """
 
-  @close_offset_from_sunset_minutes 30
   @open_offset_from_sunrise_minutes -15
+  @close_offset_from_sunset_minutes 30
 
   def next_open!() do
     next_sunrise = next_sunrise!()
