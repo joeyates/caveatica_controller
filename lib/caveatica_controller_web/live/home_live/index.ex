@@ -3,6 +3,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   require Logger
 
+  alias CaveaticaController.LiveSettings
   alias CaveaticaController.Scheduler
   alias Phoenix.PubSub
 
@@ -11,12 +12,16 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
 
     jobs = Scheduler.jobs()
+    close_duration = LiveSettings.get_close_duration()
+    open_duration = LiveSettings.get_open_duration()
     next_close = jobs[:close].schedule
     next_open = jobs[:open].schedule
 
     socket
     |> assign(:image_path, nil)
     |> assign(:image_age, nil)
+    |> assign(:close_duration, close_duration)
+    |> assign(:open_duration, open_duration)
     |> assign(:next_open, next_open)
     |> assign(:next_close, next_close)
     |> set_light("off")
@@ -45,6 +50,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
               </div>
             </.simple_form>
           </div>
+          <div class="text-sm">Close duration: <%= inspect(@close_duration) %></div>
+          <div class="text-sm">Open duration: <%= inspect(@open_duration) %></div>
           <div class="text-sm">Next open: <%= inspect(@next_open) %></div>
           <div class="text-sm">Next close: <%= inspect(@next_close) %></div>
         </div>
