@@ -1,5 +1,21 @@
 import Config
 
+fetch_integer_env = fn var ->
+  case System.get_env(var) do
+    nil ->
+      raise "environment variable #{var} is missing."
+
+    value ->
+      case Integer.parse(value) do
+        {int_value, ""} ->
+          int_value
+
+        _ ->
+          raise "environment variable #{var} must be an integer, got '#{value}'."
+      end
+  end
+end
+
 secret_key_base =
   System.get_env("SECRET_KEY_BASE") ||
     raise """
@@ -39,22 +55,15 @@ timezone =
   |> System.get_env()
   |> Float.parse()
 
-{open_duation, ""} =
-  "CAVEATICA_OPEN_DURATION"
-  |> System.get_env()
-  |> Integer.parse()
-
-{close_duation, ""} =
-  "CAVEATICA_CLOSE_DURATION"
-  |> System.get_env()
-  |> Integer.parse()
+open_duration = fetch_integer_env.("CAVEATICA_OPEN_DURATION")
+close_duration = fetch_integer_env.("CAVEATICA_CLOSE_DURATION")
 
 config :caveatica_controller,
   longitude: longitude,
   latitude: latitude,
   timezone: timezone,
-  open_duration: open_duation,
-  close_duration: close_duation
+  open_duration: open_duration,
+  close_duration: close_duration
 
 reset_time = %Crontab.CronExpression{minute: [0], hour: [12]}
 
