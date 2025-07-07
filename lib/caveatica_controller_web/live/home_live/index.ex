@@ -49,7 +49,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         </div>
         <div class="text-sm">
           <form class="flex flex-row items-center gap-2" phx-change="update-open-duration">
-            <label for="open_duration" class="text-sm">Set open duration (ms):</label>
+            <label for="open_duration" class="text-sm">Open duration (ms):</label>
             <input
               id="open_duration"
               name="open_duration"
@@ -64,7 +64,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         <div class="text-sm">Next open: <%= inspect(@next_open) %></div>
         <div class="text-sm">
           <form class="flex flex-row items-center gap-2" phx-change="update-close-duration">
-            <label for="close_duration" class="text-sm">Set close duration (ms):</label>
+            <label for="close_duration" class="text-sm">Close duration (ms):</label>
             <input
               id="close_duration"
               name="close_duration"
