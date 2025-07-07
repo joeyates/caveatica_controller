@@ -1,6 +1,7 @@
 defmodule CaveaticaController.Scheduler do
   use Quantum, otp_app: :caveatica_controller
 
+  alias CaveaticaController.LiveSettings
   alias CaveaticaController.Times
 
   require Logger
@@ -41,8 +42,10 @@ defmodule CaveaticaController.Scheduler do
     |> Quantum.Job.set_task(fn ->
       Logger.info("Opening via cron job")
 
+      open_duration = LiveSettings.get_open_duration()
+
       CaveaticaControllerWeb.Endpoint.broadcast!("control", "open", %{
-        "duration" => open_duration()
+        "duration" => open_duration
       })
     end)
   end
@@ -61,8 +64,10 @@ defmodule CaveaticaController.Scheduler do
     |> Quantum.Job.set_task(fn ->
       Logger.info("Closing via cron job")
 
+      close_duration = LiveSettings.get_close_duration()
+
       CaveaticaControllerWeb.Endpoint.broadcast!("control", "close", %{
-        "duration" => close_duration()
+        "duration" => close_duration
       })
     end)
   end
@@ -70,13 +75,5 @@ defmodule CaveaticaController.Scheduler do
   defp list_jobs() do
     jobs = jobs()
     Logger.info("Current Jobs: #{inspect(jobs)}")
-  end
-
-  defp open_duration() do
-    Application.fetch_env!(:caveatica_controller, :open_duration)
-  end
-
-  defp close_duration() do
-    Application.fetch_env!(:caveatica_controller, :close_duration)
   end
 end
