@@ -7,6 +7,23 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   alias Phoenix.PubSub
 
   @impl true
+  def mount(_params, _session, socket) do
+    PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
+
+    jobs = Scheduler.jobs()
+    next_close = jobs[:close].schedule
+    next_open = jobs[:open].schedule
+
+    socket
+    |> assign(:image_path, nil)
+    |> assign(:image_age, nil)
+    |> assign(:next_open, next_open)
+    |> assign(:next_close, next_close)
+    |> set_light("off")
+    |> ok()
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <h1 class="mb-4 text-4xl">Caveatica Live</h1>
@@ -74,23 +91,6 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
       </div>
     </div>
     """
-  end
-
-  @impl true
-  def mount(_params, _session, socket) do
-    PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
-
-    jobs = Scheduler.jobs()
-    next_close = jobs[:close].schedule
-    next_open = jobs[:open].schedule
-
-    socket
-    |> assign(:image_path, nil)
-    |> assign(:image_age, nil)
-    |> assign(:next_open, next_open)
-    |> assign(:next_close, next_close)
-    |> set_light("off")
-    |> ok()
   end
 
   @impl true
