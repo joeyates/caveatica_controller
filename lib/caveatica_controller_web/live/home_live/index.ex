@@ -34,27 +34,49 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
     <div class="flex flex-row">
-      <div>
-        <div class="flex flex-col">
-          <img src={@image_path} title={@image_age} />
-          <div class="text-sm"><%= @image_age %></div>
-        </div>
+      <div class="flex flex-col gap-4">
+        <img src={@image_path} title={@image_age} />
+        <div class="text-sm"><%= @image_age %></div>
 
-        <div class="mt-4">
-          <div class="flex flex-col">
-            <.simple_form for={@light_form} id="light_form" phx-change="change-light">
-              <div>Light</div>
-              <div class="flex flex-row gap-6">
-                <.input type="radio" field={@light_form[:state]} value="off" label="Off" />
-                <.input type="radio" field={@light_form[:state]} value="on" label="On" />
-              </div>
-            </.simple_form>
-          </div>
-          <div class="text-sm">Close duration: <%= inspect(@close_duration) %></div>
-          <div class="text-sm">Open duration: <%= inspect(@open_duration) %></div>
-          <div class="text-sm">Next open: <%= inspect(@next_open) %></div>
-          <div class="text-sm">Next close: <%= inspect(@next_close) %></div>
+        <div class="flex flex-col gap-4">
+          <.simple_form for={@light_form} id="light_form" phx-change="change-light">
+            <div>Light</div>
+            <div class="flex flex-row gap-6">
+              <.input type="radio" field={@light_form[:state]} value="off" label="Off" />
+              <.input type="radio" field={@light_form[:state]} value="on" label="On" />
+            </div>
+          </.simple_form>
         </div>
+        <div class="text-sm">
+          <form class="flex flex-row items-center gap-2" phx-change="update-open-duration">
+            <label for="open_duration" class="text-sm">Set open duration (ms):</label>
+            <input
+              id="open_duration"
+              name="open_duration"
+              type="number"
+              value={@open_duration}
+              min="100"
+              max="20000"
+              step="100"
+            />
+          </form>
+        </div>
+        <div class="text-sm">Next open: <%= inspect(@next_open) %></div>
+        <div class="text-sm">
+          <form class="flex flex-row items-center gap-2" phx-change="update-close-duration">
+            <label for="close_duration" class="text-sm">Set close duration (ms):</label>
+            <input
+              id="close_duration"
+              name="close_duration"
+              type="number"
+              value={@close_duration}
+              min="100"
+              max="20000"
+              step="100"
+            />
+          </form>
+        </div>
+        <div class="text-sm">Next close: <%= inspect(@next_close) %></div>
       </div>
 
       <div class="ml-4 flex flex-row">
@@ -133,6 +155,42 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
     socket
     |> set_light(state)
+    |> noreply()
+  end
+
+  def handle_event("update-close-duration", %{"close_duration" => close_duration}, socket) do
+    Logger.info("HomeLive.Index handle_event update-close-duration: #{inspect(close_duration)}")
+
+    close_duration =
+      case Integer.parse(close_duration) do
+        {value, _} when value >= 100 and value <= 20000 ->
+          LiveSettings.set_close_duration(value)
+          value
+
+        _ ->
+          socket.assigns.close_duration
+      end
+
+    socket
+    |> assign(:close_duration, close_duration)
+    |> noreply()
+  end
+
+  def handle_event("update-open-duration", %{"open_duration" => open_duration}, socket) do
+    Logger.info("HomeLive.Index handle_event update-open-duration: #{inspect(open_duration)}")
+
+    open_duration =
+      case Integer.parse(open_duration) do
+        {value, _} when value >= 100 and value <= 20000 ->
+          LiveSettings.set_open_duration(value)
+          value
+
+        _ ->
+          socket.assigns.open_duration
+      end
+
+    socket
+    |> assign(:open_duration, open_duration)
     |> noreply()
   end
 
