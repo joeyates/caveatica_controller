@@ -8,7 +8,7 @@
         "path": "/health",
         "content": "OK",
         "wait": 1,
-        "attempts": 6
+        "attempts": 15
       }
     ]
   }
