@@ -31,18 +31,23 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
     <div class="flex flex-row">
       <div class="flex-1 flex flex-col gap-4">
-        <img src={@image_path} title={@image_age} />
-        <div class="text-sm"><%= @image_age %></div>
-
-        <div class="flex flex-col gap-4">
-          <.simple_form for={@light_form} id="light_form" phx-change="change-light">
-            <div>Light</div>
-            <div class="flex flex-row gap-6">
-              <.input type="radio" field={@light_form[:state]} value="off" label="Off" />
-              <.input type="radio" field={@light_form[:state]} value="on" label="On" />
-            </div>
-          </.simple_form>
+        <div class="text-2xl">
+          <div class="text-2xl">Webcam</div>
+          <%= if @image_path do %>
+            <img src={@image_path} title={@image_age} />
+            <div class="text-sm"><%= @image_age %></div>
+          <% else %>
+            <div class="text-sm py-2">No image available</div>
+          <% end %>
         </div>
+
+        <.simple_form for={@light_form} id="light_form" phx-change="change-light">
+          <div class="text-2xl">Light</div>
+          <div class="flex flex-row gap-6">
+            <.input type="radio" field={@light_form[:state]} value="off" label="Off" />
+            <.input type="radio" field={@light_form[:state]} value="on" label="On" />
+          </div>
+        </.simple_form>
 
         <div class="text-2xl">Open</div>
         <button
