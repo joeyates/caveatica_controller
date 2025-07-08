@@ -93,14 +93,22 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
             </div>
           </button>
 
-          <button class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="open">
+          <button
+            class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl"
+            phx-click="open"
+            data-confirm="Are you sure?"
+          >
             <div class="flex flex-col">
               <div>^^</div>
               <div>Open</div>
             </div>
           </button>
 
-          <button class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="close">
+          <button
+            class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl"
+            phx-click="close"
+            data-confirm="Are you sure?"
+          >
             <div class="flex flex-col">
               <div>Close</div>
               <div class="transform rotate-180">^^</div>
