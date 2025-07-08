@@ -24,6 +24,11 @@ defmodule CaveaticaController.LiveSettings do
     Logger.info("Open duration set to #{new_duration} seconds.")
   end
 
+  @spec default_open_duration() :: non_neg_integer()
+  def default_open_duration() do
+    Application.fetch_env!(:caveatica_controller, :open_duration)
+  end
+
   @spec get_close_duration() :: non_neg_integer()
   def get_close_duration() do
     tid = ets_table_tid()
@@ -36,6 +41,11 @@ defmodule CaveaticaController.LiveSettings do
     tid = ets_table_tid()
     :ets.insert(tid, {:close_duration, new_duration})
     Logger.info("Close duration set to #{new_duration} seconds.")
+  end
+
+  @spec default_close_duration() :: non_neg_integer()
+  def default_close_duration() do
+    Application.fetch_env!(:caveatica_controller, :close_duration)
   end
 
   @spec ets_table_tid() :: term()
@@ -56,8 +66,8 @@ defmodule CaveaticaController.LiveSettings do
   end
 
   defp insert_initial_settings(tid) do
-    open_duration = Application.fetch_env!(:caveatica_controller, :open_duration)
-    close_duration = Application.fetch_env!(:caveatica_controller, :close_duration)
+    open_duration = default_open_duration()
+    close_duration = default_close_duration()
 
     :ets.insert(tid, [{:open_duration, open_duration}, {:close_duration, close_duration}])
 
