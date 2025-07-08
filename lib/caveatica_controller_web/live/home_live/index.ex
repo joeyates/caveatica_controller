@@ -30,7 +30,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
     <div class="flex flex-row">
-      <div class="flex flex-col gap-4">
+      <div class="flex-1 flex flex-col gap-4">
         <img src={@image_path} title={@image_age} />
         <div class="text-sm"><%= @image_age %></div>
 
