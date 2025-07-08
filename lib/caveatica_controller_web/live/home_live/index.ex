@@ -47,75 +47,69 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
             </div>
           </.simple_form>
         </div>
-        <div class="text-sm">
-          <form class="flex flex-row items-center gap-2" phx-change="update-open-duration">
-            <label for="open_duration" class="text-sm">Open duration (ms):</label>
-            <input
-              id="open_duration"
-              name="open_duration"
-              type="number"
-              value={@open_duration}
-              min="100"
-              max="20000"
-              step="100"
-            />
-          </form>
-        </div>
+
+        <div class="text-2xl">Open</div>
+        <button
+          class="p-2 rounded bg-gray-300 color-white text-3xl"
+          phx-click="increase-open-duration"
+        >
+          +
+        </button>
+        <div class="text-2xl text-center"><%= @open_duration %> ms</div>
+        <button
+          class="p-2 rounded bg-gray-300 color-white text-3xl"
+          phx-click="decrease-open-duration"
+        >
+          -
+        </button>
+
         <div class="text-sm">Next open: <%= inspect(@next_open) %></div>
-        <div class="text-sm">
-          <form class="flex flex-row items-center gap-2" phx-change="update-close-duration">
-            <label for="close_duration" class="text-sm">Close duration (ms):</label>
-            <input
-              id="close_duration"
-              name="close_duration"
-              type="number"
-              value={@close_duration}
-              min="100"
-              max="20000"
-              step="100"
-            />
-          </form>
-        </div>
-        <div class="text-sm">Next close: <%= inspect(@next_close) %></div>
+
+        <div class="text-2xl">Close</div>
+        <button
+          class="p-2 rounded bg-gray-300 color-white text-3xl"
+          phx-click="increase-close-duration"
+        >
+          +
+        </button>
+        <div class="text-2xl text-center"><%= @close_duration %> ms</div>
+        <button
+          class="p-2 rounded bg-gray-300 color-white text-3xl"
+          phx-click="decrease-close-duration"
+        >
+          -
+        </button>
       </div>
 
       <div class="ml-4 flex flex-row">
-        <div class="flex flex-col">
-          <div>
-            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-open">
-              <div class="flex flex-col">
-                <div>^</div>
-                <div>Step open</div>
-              </div>
-            </button>
-          </div>
+        <div class="flex flex-col items-center">
+          <button class="p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-open">
+            <div class="flex flex-col">
+              <div>^</div>
+              <div>Step open</div>
+            </div>
+          </button>
 
-          <div class="mt-4">
-            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="open">
-              <div class="flex flex-col">
-                <div>^^</div>
-                <div>Open</div>
-              </div>
-            </button>
-          </div>
+          <button class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="open">
+            <div class="flex flex-col">
+              <div>^^</div>
+              <div>Open</div>
+            </div>
+          </button>
 
-          <div class="mt-4">
-            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="close">
-              <div class="flex flex-col">
-                <div>Close</div>
-                <div class="transform rotate-180">^^</div>
-              </div>
-            </button>
-          </div>
+          <button class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="close">
+            <div class="flex flex-col">
+              <div>Close</div>
+              <div class="transform rotate-180">^^</div>
+            </div>
+          </button>
 
-          <div class="mt-4">
-            <button class="w-64 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-closed">
-              <div class="flex flex-col">
-                <div>Step close</div>
-                <div class="transform rotate-180">^</div>
-              </div>
-            </button>
-          </div>
+          <button class="mt-4 p-2 rounded bg-gray-300 color-white text-3xl" phx-click="nudge-closed">
+            <div class="flex flex-col">
+              <div>Step close</div>
+              <div class="transform rotate-180">^</div>
+            </div>
+          </button>
         </div>
       </div>
     </div>
@@ -158,40 +152,60 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     |> noreply()
   end
 
-  def handle_event("update-close-duration", %{"close_duration" => close_duration}, socket) do
-    Logger.info("HomeLive.Index handle_event update-close-duration: #{inspect(close_duration)}")
-
-    close_duration =
-      case Integer.parse(close_duration) do
-        {value, _} when value >= 100 and value <= 20000 ->
-          LiveSettings.set_close_duration(value)
-          value
-
-        _ ->
-          socket.assigns.close_duration
-      end
+  def handle_event("decrease-open-duration", _params, socket) do
+    Logger.info("HomeLive.Index handle_event decrease-open-duration")
 
     socket
-    |> assign(:close_duration, close_duration)
+    |> optionally_update_open_duration(-100)
     |> noreply()
   end
 
-  def handle_event("update-open-duration", %{"open_duration" => open_duration}, socket) do
-    Logger.info("HomeLive.Index handle_event update-open-duration: #{inspect(open_duration)}")
-
-    open_duration =
-      case Integer.parse(open_duration) do
-        {value, _} when value >= 100 and value <= 20000 ->
-          LiveSettings.set_open_duration(value)
-          value
-
-        _ ->
-          socket.assigns.open_duration
-      end
+  def handle_event("increase-open-duration", _params, socket) do
+    Logger.info("HomeLive.Index handle_event increase-open-duration")
 
     socket
-    |> assign(:open_duration, open_duration)
+    |> optionally_update_open_duration(100)
     |> noreply()
+  end
+
+  def handle_event("decrease-close-duration", _params, socket) do
+    Logger.info("HomeLive.Index handle_event decrease-close-duration")
+
+    socket
+    |> optionally_update_close_duration(-100)
+    |> noreply()
+  end
+
+  def handle_event("increase-close-duration", _params, socket) do
+    Logger.info("HomeLive.Index handle_event increase-close-duration")
+
+    socket
+    |> optionally_update_close_duration(100)
+    |> noreply()
+  end
+
+  defp optionally_update_open_duration(socket, delta) do
+    existing = socket.assigns.open_duration
+    updated = existing + delta
+
+    if updated > 100 && updated <= 20000 do
+      LiveSettings.set_open_duration(updated)
+      assign(socket, :open_duration, updated)
+    else
+      socket
+    end
+  end
+
+  defp optionally_update_close_duration(socket, delta) do
+    existing = socket.assigns.close_duration
+    updated = existing + delta
+
+    if updated > 100 && updated <= 20000 do
+      LiveSettings.set_close_duration(updated)
+      assign(socket, :close_duration, updated)
+    else
+      socket
+    end
   end
 
   @impl true
