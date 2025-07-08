@@ -1,8 +1,10 @@
 defmodule CaveaticaController.Scheduler do
   use Quantum, otp_app: :caveatica_controller
 
+  alias CaveaticaController.Cldr.DateTime.Relative
   alias CaveaticaController.LiveSettings
   alias CaveaticaController.Times
+  alias Crontab.Scheduler
 
   require Logger
 
@@ -21,6 +23,32 @@ defmodule CaveaticaController.Scheduler do
     add_job(close_job())
     Logger.info("After:")
     list_jobs()
+  end
+
+  def next_open() do
+    jobs = jobs()
+    next_open = jobs[:open].schedule
+
+    with {:ok, naive} <- Scheduler.get_next_run_date(next_open, NaiveDateTime.utc_now()),
+         {:ok, local} <- DateTime.from_naive(naive, timezone()) do
+      relative = Relative.to_string!(local, format: :default)
+      "#{relative} (at #{DateTime.to_string(local)})"
+    else
+      _ -> "No next open time found"
+    end
+  end
+
+  def next_close() do
+    jobs = jobs()
+    next_close = jobs[:close].schedule
+
+    with {:ok, datetime} <- Scheduler.get_next_run_date(next_close, NaiveDateTime.utc_now()),
+         {:ok, local} <- DateTime.from_naive(datetime, timezone()) do
+      relative = Relative.to_string!(local, format: :default)
+      "#{relative} (at #{DateTime.to_string(local)})"
+    else
+      _ -> "No next close time found"
+    end
   end
 
   defp delete_existing() do
@@ -75,5 +103,9 @@ defmodule CaveaticaController.Scheduler do
   defp list_jobs() do
     jobs = jobs()
     Logger.info("Current Jobs: #{inspect(jobs)}")
+  end
+
+  defp timezone() do
+    Application.fetch_env!(:caveatica_controller, :timezone)
   end
 end

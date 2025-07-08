@@ -11,19 +11,15 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   def mount(_params, _session, socket) do
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
 
-    jobs = Scheduler.jobs()
     close_duration = LiveSettings.get_close_duration()
     open_duration = LiveSettings.get_open_duration()
-    next_close = jobs[:close].schedule
-    next_open = jobs[:open].schedule
 
     socket
     |> assign(:image_path, nil)
     |> assign(:image_age, nil)
     |> assign(:close_duration, close_duration)
     |> assign(:open_duration, open_duration)
-    |> assign(:next_open, next_open)
-    |> assign(:next_close, next_close)
+    |> assign_open_close()
     |> set_light("off")
     |> ok()
   end
@@ -63,7 +59,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
           -
         </button>
 
-        <div class="text-sm">Next open: <%= inspect(@next_open) %></div>
+        <div class="text-sm">Next open: <%= @next_open %></div>
 
         <div class="text-2xl">Close</div>
         <button
@@ -79,6 +75,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         >
           -
         </button>
+
+        <div class="text-sm">Next close: <%= @next_close %></div>
       </div>
 
       <div class="ml-4 flex flex-row">
@@ -223,6 +221,15 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     socket
     |> assign(:page_title, "Caveatica")
     |> noreply()
+  end
+
+  defp assign_open_close(socket) do
+    next_open = Scheduler.next_open()
+    next_close = Scheduler.next_close()
+
+    socket
+    |> assign(:next_open, next_open)
+    |> assign(:next_close, next_close)
   end
 
   defp set_light(socket, state) do
