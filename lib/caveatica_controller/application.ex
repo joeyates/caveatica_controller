@@ -15,7 +15,8 @@ defmodule CaveaticaController.Application do
         {Phoenix.PubSub, name: CaveaticaController.PubSub},
         # Start Finch
         {Finch, name: CaveaticaController.Finch},
-        CaveaticaController.Scheduler
+        CaveaticaController.Scheduler,
+        CaveaticaController.LiveSettings
       ] ++ optional_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
