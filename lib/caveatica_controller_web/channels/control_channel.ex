@@ -17,7 +17,7 @@ defmodule CaveaticaControllerWeb.ControlChannel do
   * an image upload every second.
   """
   def handle_in("status", status, socket) do
-    Logger.info("Control channel status: #{inspect(status)}")
+    Logger.debug("Control channel status: #{inspect(status)}")
     PubSub.broadcast(CaveaticaController.PubSub, "caveatica_status", {:caveatica_status, status})
     {:noreply, socket}
   end
