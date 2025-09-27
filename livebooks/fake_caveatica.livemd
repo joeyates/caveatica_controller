@@ -13,7 +13,7 @@ Mix.install([
 ```elixir
 defmodule Caveatica.SocketClient do
   @moduledoc """
-  Connect to caveatica_controller's 'control' socket
+  Simulate Caveatica.
   """
 
   use Slipstream, restart: :temporary
@@ -21,6 +21,7 @@ defmodule Caveatica.SocketClient do
   require Logger
 
   @topic "control"
+  @status_interval _three_seconds = 3_000
 
   def start_link(args) do
     Slipstream.start_link(__MODULE__, args, name: __MODULE__)
@@ -29,16 +30,20 @@ defmodule Caveatica.SocketClient do
   @impl Slipstream
   def init(config) do
     Logger.info("info: #{inspect(config)}")
+    state =
+      config
+      |> connect!()
+      |> Map.put(:status_timer, nil)
+      |> Map.put(:ping_timer, nil)
     {:ok, connect!(config), {:continue, :start_ping}}
-    # {:ok, connect!(config)}
   end
 
   @impl Slipstream
   def handle_continue(:start_ping, socket) do
     Logger.info("handle_continue")
-    timer = :timer.send_interval(1000, self(), :request_metrics)
+    status_timer = :timer.send_interval(@status_interval, self(), :send_status)
 
-    {:noreply, assign(socket, :ping_timer, timer)}
+    {:noreply, assign(socket, :status_timer, status_timer)}
   end
 
   @impl Slipstream
@@ -48,20 +53,11 @@ defmodule Caveatica.SocketClient do
   end
 
   @impl Slipstream
-  def handle_info(:request_metrics, socket) do
-    Logger.info("Requesting metrics")
-    {:ok, ref} = push(socket, @topic, "get_metrics", %{format: "json"})
+  def handle_info(:send_status, socket) do
+    light_status = ...
+    {:ok, _ref} = push(socket, @topic, "status", %{light: light_status})
 
-    {:noreply, assign(socket, :metrics_request, ref)}
-  end
-
-  @impl Slipstream
-  def handle_reply(ref, metrics, socket) do
-    if ref == socket.assigns.metrics_request do
-      Logger.info("Got metrics #{inspect(metrics)}")
-    end
-
-    {:ok, socket}
+    {:noreply, socket}
   end
 
   @impl Slipstream
@@ -85,11 +81,15 @@ defmodule Caveatica.SocketClient do
 
   @impl Slipstream
   def handle_disconnect(_reason, socket) do
-    ping_timer = socket.assigns[:ping_timer]
+    status_timer = socket.assigns[:status_timer]
 
-    if ping_timer do
-      :timer.cancel(ping_timer)
-    end
+    socket =
+      if status_timer do
+        :timer.cancel(status_timer)
+        Map.put(socket, :status_timer, nil)
+      else
+        socket
+      end
 
     {:stop, :normal, socket}
   end
