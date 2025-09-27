@@ -49,7 +49,13 @@ defmodule CaveaticaController.MixProject do
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.deploy": [
+        "tailwind.install --runtime-config --if-missing",
+        "tailwind default --minify",
+        "esbuild.install --runtime-config --if-missing",
+        "esbuild default --minify",
+        "phx.digest"
+      ]
     ]
   end
 end
