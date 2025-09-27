@@ -16,14 +16,4 @@ defmodule CaveaticaControllerWeb.Router do
     live "/", HomeLive.Index, :index
     get "/health", PageController, :health
   end
-
-  if Application.compile_env(:caveatica_controller, :dev_routes) do
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :browser
-
-      live_dashboard "/dashboard", metrics: CaveaticaControllerWeb.Telemetry
-    end
-  end
 end
