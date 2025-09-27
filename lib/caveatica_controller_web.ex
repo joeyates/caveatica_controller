@@ -43,7 +43,7 @@ defmodule CaveaticaControllerWeb do
         layouts: [html: CaveaticaControllerWeb.Layouts]
 
       import Plug.Conn
-      import CaveaticaControllerWeb.Gettext
+      use Gettext, backend: CaveaticaControllerWeb.Gettext
 
       unquote(verified_routes())
     end

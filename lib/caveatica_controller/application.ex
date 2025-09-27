@@ -9,8 +9,6 @@ defmodule CaveaticaController.Application do
   def start(_type, _args) do
     children =
       [
-        # Start the Telemetry supervisor
-        CaveaticaControllerWeb.Telemetry,
         # Start the PubSub system
         {Phoenix.PubSub, name: CaveaticaController.PubSub},
         # Start Finch

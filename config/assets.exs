@@ -4,7 +4,7 @@ import Config
 # with watchers.
 
 config :esbuild,
-  version: "0.14.41",
+  version: "0.25.0",
   default: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
@@ -13,12 +13,11 @@ config :esbuild,
   ]
 
 config :tailwind,
-  version: "3.2.4",
+  version: "4.1.12",
   default: [
     args: ~w(
-      --config=tailwind.config.js
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
+      --input=assets/css/app.css
+      --output=priv/static/assets/app.css
     ),
-    cd: Path.expand("../assets", __DIR__)
+    cd: Path.expand("..", __DIR__)
   ]
