@@ -169,7 +169,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   def handle_event("change-light", %{"light" => %{"state" => state}}, socket) do
     Logger.info("HomeLive.Index handle_event change-light: #{inspect(state)}")
-    CaveaticaControllerWeb.Endpoint.broadcast!("control", "light", %{"state" => state})
+    value = if state, do: "on", else: "off"
+    CaveaticaControllerWeb.Endpoint.broadcast!("control", "light", %{"state" => value})
 
     noreply(socket)
   end
