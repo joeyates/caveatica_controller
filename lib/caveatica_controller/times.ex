@@ -6,6 +6,10 @@ defmodule CaveaticaController.Times do
   @open_offset_from_sunrise_minutes -15
   @close_offset_from_sunset_minutes 30
 
+  def caveatica_datetime() do
+    DateTime.now!(timezone())
+  end
+
   def next_open!() do
     next_sunrise = next_sunrise!()
     DateTime.add(next_sunrise, @open_offset_from_sunrise_minutes, :minute)
@@ -17,7 +21,7 @@ defmodule CaveaticaController.Times do
   end
 
   defp next_sunrise!() do
-    now = now()
+    now = caveatica_datetime()
     todays_sunrise = sunrise!(now)
 
     if now < todays_sunrise do
@@ -33,7 +37,7 @@ defmodule CaveaticaController.Times do
   end
 
   defp next_sunset!() do
-    now = now()
+    now = caveatica_datetime()
     todays_sunset = sunset!(now)
 
     if now < todays_sunset do
@@ -56,10 +60,6 @@ defmodule CaveaticaController.Times do
     longitude = Application.fetch_env!(:caveatica_controller, :longitude)
     latitude = Application.fetch_env!(:caveatica_controller, :latitude)
     %Geo.Point{coordinates: {longitude, latitude}}
-  end
-
-  defp now() do
-    DateTime.now!(timezone())
   end
 
   defp sunrise!(date) do

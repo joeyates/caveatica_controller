@@ -1,14 +1,10 @@
 defmodule CaveaticaController.Images do
   alias CaveaticaController.Cldr.DateTime.Relative
 
-  @server_timezone "Etc/UTC"
-  @user_timezone "Europe/Rome"
   @maximum_image_dimension 320
 
   def receive(binary) do
-    timestamp =
-      DateTime.now!(@server_timezone)
-      |> DateTime.shift_zone!(@user_timezone)
+    timestamp = CaveaticaController.Times.caveatica_datetime()
 
     original_path = original_path()
     File.write!(original_path, binary)
