@@ -20,6 +20,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     |> assign(:image_age, nil)
     |> assign(:close_duration, close_duration)
     |> assign(:open_duration, open_duration)
+    |> assign(:last_status_time, nil)
     |> assign_open_close()
     |> assign_light_form("off")
     |> ok()
@@ -30,13 +31,22 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     ~H"""
     <h1 class="mb-4 text-4xl">Caveatica Live</h1>
 
+    <div class="mb-4 text-2xl">Last status: <span id="last-status" phx-update="ignore"></span></div>
+    <div
+      phx-hook="RelativeTime"
+      id="last-status-hook"
+      data-datetime={@last_status_time}
+      data-target-id="last-status"
+    >
+    </div>
+
     <div class="flex flex-row">
       <div class="flex-1 flex flex-col gap-4">
         <div class="text-2xl">
           <div class="text-2xl">Webcam</div>
           <%= if @image_path do %>
             <img src={@image_path} title={@image_age} />
-            <div class="text-sm"><%= @image_age %></div>
+            <div class="text-sm">{@image_age}</div>
           <% else %>
             <div class="text-sm py-2">No image available</div>
           <% end %>
@@ -45,8 +55,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         <.simple_form for={@light_form} id="light_form" phx-change="change-light">
           <div class="text-2xl">Light</div>
           <div class="flex flex-row gap-6">
-            <.input type="radio" field={@light_form[:state]} value="off" label="Off" />
-            <.input type="radio" field={@light_form[:state]} value="on" label="On" />
+            <.input type="checkbox" field={@light_form[:state]} label="Light" />
           </div>
         </.simple_form>
 
@@ -57,7 +66,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         >
           +
         </button>
-        <div class="text-2xl text-center"><%= @open_duration %> ms</div>
+        <div class="text-2xl text-center">{@open_duration} ms</div>
         <button
           class="p-2 rounded bg-gray-300 color-white text-3xl"
           phx-click="decrease-open-duration"
@@ -65,7 +74,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
           -
         </button>
 
-        <div class="text-sm">Next open: <%= @next_open %></div>
+        <div class="text-sm">Next open: {@next_open}</div>
 
         <div class="text-2xl">Close</div>
         <button
@@ -74,7 +83,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         >
           +
         </button>
-        <div class="text-2xl text-center"><%= @close_duration %> ms</div>
+        <div class="text-2xl text-center">{@close_duration} ms</div>
         <button
           class="p-2 rounded bg-gray-300 color-white text-3xl"
           phx-click="decrease-close-duration"
@@ -82,7 +91,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
           -
         </button>
 
-        <div class="text-sm">Next close: <%= @next_close %></div>
+        <div class="text-sm">Next close: {@next_close}</div>
       </div>
 
       <div class="ml-4 flex flex-row">
@@ -223,7 +232,10 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def handle_info({:caveatica_status, status}, socket) do
+    status_time = CaveaticaController.Times.caveatica_datetime()
+
     socket
+    |> assign(:last_status_time, status_time)
     |> assign_light_form(status["light"])
     |> noreply()
   end
