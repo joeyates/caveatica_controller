@@ -19,9 +19,16 @@ class RelativeTime extends ViewHook {
       this.setValue('none')
       return
     }
+
     const date = new Date(datetime)
     const difference = Date.now() - date
     const seconds = Math.round(difference / 1000)
+
+    if (seconds < 1) {
+      this.setValue('now')
+      return
+    }
+
     const plural = seconds !== 1 ? 's' : ''
     this.setValue(`${seconds} second${plural} ago`)
   }
