@@ -11,17 +11,11 @@ defmodule CaveaticaControllerWeb.ControlChannel do
   end
 
   @doc """
-  Caveatica sends three types of requests:
+  Caveatica sends the following types of requests:
 
-  * a get_metrics request every 10 seconds,
   * a status update every 3 seconds,
   * an image upload every second.
   """
-  def handle_in("get_metrics", _params, socket) do
-    Logger.debug("Control channel get_metrics")
-    {:reply, {:ok, %{result: "ok"}}, socket}
-  end
-
   def handle_in("status", status, socket) do
     Logger.info("Control channel status: #{inspect(status)}")
     PubSub.broadcast(CaveaticaController.PubSub, "caveatica_status", {:status_update, status})
