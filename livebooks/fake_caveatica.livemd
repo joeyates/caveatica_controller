@@ -11,6 +11,10 @@ Mix.install([
 ## Section
 
 ```elixir
+client_config = {Caveatica.SocketClient, uri: "ws://192.168.0.7:4000/control/websocket"}
+```
+
+```elixir
 defmodule Caveatica.SocketClient do
   @moduledoc """
   Simulate Caveatica.
@@ -30,18 +34,19 @@ defmodule Caveatica.SocketClient do
   @impl Slipstream
   def init(config) do
     Logger.info("info: #{inspect(config)}")
+
     state =
       config
       |> connect!()
-      |> Map.put(:status_timer, nil)
-      |> Map.put(:ping_timer, nil)
-    {:ok, connect!(config), {:continue, :start_ping}}
+      |> assign(:status_timer, nil)
+      |> assign(:light, "off")
+
+    {:ok, state, {:continue, :start_ping}}
   end
 
   @impl Slipstream
   def handle_continue(:start_ping, socket) do
-    Logger.info("handle_continue")
-    status_timer = :timer.send_interval(@status_interval, self(), :send_status)
+    {:ok, status_timer} = :timer.send_interval(@status_interval, self(), :send_status)
 
     {:noreply, assign(socket, :status_timer, status_timer)}
   end
@@ -54,7 +59,7 @@ defmodule Caveatica.SocketClient do
 
   @impl Slipstream
   def handle_info(:send_status, socket) do
-    light_status = ...
+    light_status = socket.assigns.light
     {:ok, _ref} = push(socket, @topic, "status", %{light: light_status})
 
     {:noreply, socket}
@@ -73,6 +78,12 @@ defmodule Caveatica.SocketClient do
     {:ok, socket}
   end
 
+  def handle_message(@topic, "light", %{"state" => state}, socket) do
+    Logger.info("setting light: #{state}")
+
+    {:ok, assign(socket, :light, state)}
+  end
+
   def handle_message(@topic, event, message, socket) do
     Logger.error("Unexpected push from server: #{event} #{inspect(message)}")
 
@@ -86,7 +97,7 @@ defmodule Caveatica.SocketClient do
     socket =
       if status_timer do
         :timer.cancel(status_timer)
-        Map.put(socket, :status_timer, nil)
+        assign(socket, :status_timer, nil)
       else
         socket
       end
@@ -97,7 +108,5 @@ end
 ```
 
 ```elixir
-{:ok, conn} =
-  {Caveatica.SocketClient, uri: "ws://192.168.0.7:4000/control/websocket"}
-  |> Kino.start_child()
+{:ok, conn} = Kino.start_child(client_config)
 ```
