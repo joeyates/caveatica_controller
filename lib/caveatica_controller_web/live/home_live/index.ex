@@ -22,7 +22,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     |> assign(:open_duration, open_duration)
     |> assign(:last_status_time, nil)
     |> assign_open_close()
-    |> assign_light_form("off")
+    |> assign_light_form(false)
     |> ok()
   end
 
@@ -234,10 +234,11 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   @impl true
   def handle_info({:caveatica_status, status}, socket) do
     status_time = CaveaticaController.Times.caveatica_datetime()
+    light_status = status["light"] == "on"
 
     socket
     |> assign(:last_status_time, status_time)
-    |> assign_light_form(status["light"])
+    |> assign_light_form(light_status)
     |> noreply()
   end
 
