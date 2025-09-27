@@ -9,6 +9,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    PubSub.subscribe(CaveaticaController.PubSub, "caveatica_status")
     PubSub.subscribe(CaveaticaController.PubSub, "image_upload")
 
     close_duration = LiveSettings.get_close_duration()
@@ -20,7 +21,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     |> assign(:close_duration, close_duration)
     |> assign(:open_duration, open_duration)
     |> assign_open_close()
-    |> set_light("off")
+    |> assign_light_form("off")
     |> ok()
   end
 
@@ -161,9 +162,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     Logger.info("HomeLive.Index handle_event change-light: #{inspect(state)}")
     CaveaticaControllerWeb.Endpoint.broadcast!("control", "light", %{"state" => state})
 
-    socket
-    |> set_light(state)
-    |> noreply()
+    noreply(socket)
   end
 
   def handle_event("decrease-open-duration", _params, socket) do
@@ -223,6 +222,12 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
   end
 
   @impl true
+  def handle_info({:caveatica_status, status}, socket) do
+    socket
+    |> assign_light_form(status["light"])
+    |> noreply()
+  end
+
   def handle_info({:image_upload, path, age}, socket) do
     Logger.debug("HomeLive.Index handle_info image_upload")
 
@@ -248,8 +253,8 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     |> assign(:next_close, next_close)
   end
 
-  defp set_light(socket, state) do
-    socket
-    |> assign(:light_form, to_form(%{"state" => state}, as: "light"))
+  defp assign_light_form(socket, state) do
+    form = to_form(%{"state" => state}, as: "light")
+    assign(socket, :light_form, form)
   end
 end

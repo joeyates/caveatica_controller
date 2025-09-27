@@ -18,7 +18,7 @@ defmodule CaveaticaControllerWeb.ControlChannel do
   """
   def handle_in("status", status, socket) do
     Logger.info("Control channel status: #{inspect(status)}")
-    PubSub.broadcast(CaveaticaController.PubSub, "caveatica_status", {:status_update, status})
+    PubSub.broadcast(CaveaticaController.PubSub, "caveatica_status", {:caveatica_status, status})
     {:noreply, socket}
   end
 
