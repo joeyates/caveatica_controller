@@ -55,7 +55,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         <.simple_form for={@light_form} id="light_form" phx-change="change-light">
           <div class="text-2xl">Light</div>
           <div class="flex flex-row gap-6">
-            <.input type="checkbox" field={@light_form[:state]} label="Light" />
+            <.input type="checkbox" field={@light_form[:state]} label="On" />
           </div>
         </.simple_form>
 
