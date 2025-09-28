@@ -65,13 +65,7 @@ config :caveatica_controller,
   open_duration: open_duration,
   close_duration: close_duration
 
-reset_time = %Crontab.CronExpression{minute: [0], hour: [12]}
-
-config :caveatica_controller, CaveaticaController.Scheduler,
-  timezone: "Europe/Rome",
-  jobs: [
-    reset: [schedule: reset_time, task: {CaveaticaController.Scheduler, :reset, []}]
-  ]
+config :caveatica_controller, CaveaticaController.Scheduler, timezone: timezone
 
 case config_env() do
   :prod ->
