@@ -46,7 +46,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
           <div class="text-2xl">Webcam</div>
           <%= if @image_path do %>
             <img src={@image_path} title="Webcam image" />
-            <div class="text-sm"><span id="image-age"></span></div>
+            <div class="text-sm"><span id="image-age" phx-update="ignore"></span></div>
             <div
               phx-hook="RelativeTime"
               id="image-age-hook"
