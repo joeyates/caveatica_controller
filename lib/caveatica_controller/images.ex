@@ -1,6 +1,4 @@
 defmodule CaveaticaController.Images do
-  alias CaveaticaController.Cldr.DateTime.Relative
-
   @maximum_image_dimension 320
 
   def receive(binary) do
@@ -13,8 +11,7 @@ defmodule CaveaticaController.Images do
     :ok = rotate_90(original_path, converted_path)
     epoch = DateTime.to_unix(timestamp)
     image_path = "/data/converted.jpg?time=#{epoch}"
-    age = image_age(timestamp)
-    {:ok, image_path, age}
+    {:ok, image_path, timestamp}
   end
 
   defp data_path do
@@ -27,11 +24,6 @@ defmodule CaveaticaController.Images do
 
   defp converted_path do
     Path.join(data_path(), "converted.jpg")
-  end
-
-  defp image_age(timestamp) do
-    ago = Relative.to_string!(timestamp)
-    "Image created #{ago}"
   end
 
   def rotate_90(from, to) do

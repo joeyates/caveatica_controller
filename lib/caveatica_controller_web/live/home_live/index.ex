@@ -17,7 +17,7 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
 
     socket
     |> assign(:image_path, nil)
-    |> assign(:image_age, nil)
+    |> assign(:image_timestamp, nil)
     |> assign(:close_duration, close_duration)
     |> assign(:open_duration, open_duration)
     |> assign(:last_status_time, nil)
@@ -45,8 +45,14 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
         <div class="text-2xl">
           <div class="text-2xl">Webcam</div>
           <%= if @image_path do %>
-            <img src={@image_path} title={@image_age} />
-            <div class="text-sm">{@image_age}</div>
+            <img src={@image_path} title="Webcam image" />
+            <div class="text-sm"><span id="image-age"></span></div>
+            <div
+              phx-hook="RelativeTime"
+              id="image-age-hook"
+              data-datetime={@image_timestamp}
+              data-target-id="image-age"
+            />
           <% else %>
             <div class="text-sm py-2">No image available</div>
           <% end %>
@@ -242,12 +248,12 @@ defmodule CaveaticaControllerWeb.HomeLive.Index do
     |> noreply()
   end
 
-  def handle_info({:image_upload, path, age}, socket) do
+  def handle_info({:image_upload, path, timestamp}, socket) do
     Logger.debug("HomeLive.Index handle_info image_upload")
 
     socket
     |> assign(image_path: path)
-    |> assign(image_age: age)
+    |> assign(image_timestamp: timestamp)
     |> noreply()
   end
 
