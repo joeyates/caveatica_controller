@@ -16,7 +16,7 @@ class RelativeTime extends ViewHook {
   show() {
     const datetime = this.el.dataset.datetime
     if (!datetime) {
-      this.setValue('none')
+      this.setValue('(no date)')
       return
     }
 
@@ -25,7 +25,7 @@ class RelativeTime extends ViewHook {
     const seconds = Math.round(difference / 1000)
 
     if (seconds < 1) {
-      this.setValue('now')
+      this.setValue('just now')
       return
     }
 
