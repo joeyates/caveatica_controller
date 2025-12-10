@@ -56,3 +56,11 @@ dokku letsencrypt:enable $DOKKU_APP
 dokku letsencrypt:set $DOKKU_APP server
 dokku letsencrypt:enable $DOKKU_APP
 ```
+
+Authentication is via Dokku's basic auth plugin.
+
+Add users via:
+
+```sh
+dokku http-auth:add-user $DOKKU_APP {{username}} {{password}}
+```
