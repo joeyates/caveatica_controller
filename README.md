@@ -25,8 +25,38 @@ dokku storage:ensure-directory $DOKKU_APP
 dokku storage:mount $DOKKU_APP /var/lib/dokku/data/storage/$DOKKU_APP:/app/priv/static/data
 ```
 
+On server:
+
 ```sh
-dokku config:set --no-restart $DOKKU_APP \
+chown -R 32767:32767 /var/lib/dokku/data/storage/$DOKKU_APP
+```
+
+## Authentication
+
+Authentication is via Dokku's basic auth plugin.
+
+Add users via:
+
+```sh
+dokku http-auth:enable $DOKKU_APP
+dokku http-auth:add-user $DOKKU_APP {{username}} {{password}}
+```
+
+Create the nginx configuration `/home/dokku/$DOKKU_APP/nginx.conf.d/manually-created-http-auth.conf`:
+
+```nginx
+auth_basic           "Caveatica";
+auth_basic_user_file /home/dokku/caveatica/htpasswd;
+
+location /.well-known/ {
+  auth_basic off;
+}
+```
+
+## Environment Variables
+
+```sh
+dokku config:set $DOKKU_APP \
   CAVEATICA_LATITUDE=48.85 \
   CAVEATICA_LONGITUDE=2.35 \
   CAVEATICA_TIMEZONE=Europe/Rome \
@@ -41,12 +71,8 @@ dokku config:set --no-restart $DOKKU_APP \
 The value of `DATA_PATH` should be an absolute path to a directory that
 is writeable by the application and is web readable.
 
-```sh
-git remote add dokku dokku@$DOKKU_HOST:$DOKKU_APP
-git push dokku
-```
 
-Get a TLS certificate
+## TLS certificate
 
 ```sh
 dokku ports:set $DOKKU_APP http:80:5000
@@ -57,10 +83,7 @@ dokku letsencrypt:set $DOKKU_APP server
 dokku letsencrypt:enable $DOKKU_APP
 ```
 
-Authentication is via Dokku's basic auth plugin.
-
-Add users via:
-
 ```sh
-dokku http-auth:add-user $DOKKU_APP {{username}} {{password}}
+git remote add dokku dokku@$DOKKU_HOST:$DOKKU_APP
+git push dokku
 ```
