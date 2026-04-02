@@ -38,8 +38,7 @@ Authentication is via Dokku's basic auth plugin.
 Add users via:
 
 ```sh
-dokku http-auth:enable $DOKKU_APP
-dokku http-auth:add-user $DOKKU_APP {{username}} {{password}}
+dokku http-auth:enable $DOKKU_APP $CAVEATICA_BASIC_AUTH_USER $CAVEATICA_BASIC_AUTH_PASSWORD
 ```
 
 Create the nginx configuration `/home/dokku/$DOKKU_APP/nginx.conf.d/manually-created-http-auth.conf`:
