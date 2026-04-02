@@ -18,6 +18,17 @@ dokku apps:create $DOKKU_APP
 dokku domains:set $DOKKU_APP $APP_DOMAIN
 ```
 
+## TLS certificate
+
+```sh
+dokku ports:set $DOKKU_APP http:80:$APP_PORT
+dokku letsencrypt:set $DOKKU_APP email $DOMAIN_EMAIL
+dokku letsencrypt:set $DOKKU_APP server staging
+dokku letsencrypt:enable $DOKKU_APP
+dokku letsencrypt:set $DOKKU_APP server
+dokku letsencrypt:enable $DOKKU_APP
+```
+
 ## Setup access to webcam images
 
 ```sh
@@ -25,17 +36,9 @@ dokku storage:ensure-directory $DOKKU_APP
 dokku storage:mount $DOKKU_APP /var/lib/dokku/data/storage/$DOKKU_APP:/app/priv/static/data
 ```
 
-On server:
-
-```sh
-chown -R 32767:32767 /var/lib/dokku/data/storage/$DOKKU_APP
-```
-
 ## Authentication
 
 Authentication is via Dokku's basic auth plugin.
-
-Add users via:
 
 ```sh
 dokku http-auth:enable $DOKKU_APP $CAVEATICA_BASIC_AUTH_USER $CAVEATICA_BASIC_AUTH_PASSWORD
@@ -69,18 +72,6 @@ dokku config:set $DOKKU_APP \
 
 The value of `DATA_PATH` should be an absolute path to a directory that
 is writeable by the application and is web readable.
-
-
-## TLS certificate
-
-```sh
-dokku ports:set $DOKKU_APP http:80:5000
-dokku letsencrypt:set $DOKKU_APP email $DOMAIN_EMAIL
-dokku letsencrypt:set $DOKKU_APP server staging
-dokku letsencrypt:enable $DOKKU_APP
-dokku letsencrypt:set $DOKKU_APP server
-dokku letsencrypt:enable $DOKKU_APP
-```
 
 ```sh
 git remote add dokku dokku@$DOKKU_HOST:$DOKKU_APP
