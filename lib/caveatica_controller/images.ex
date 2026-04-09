@@ -35,7 +35,7 @@ defmodule CaveaticaController.Images do
         "90",
         "-gravity",
         "center",
-        "-crop",
+        "-resize",
         "#{@maximum_image_dimension}x#{@maximum_image_dimension}",
         to
       ]
